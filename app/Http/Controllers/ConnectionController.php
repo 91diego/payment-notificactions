@@ -3,10 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
+use App\Services\ConnectionService;
 use Illuminate\Http\Request;
 
 class ConnectionController extends Controller
 {
+
+    protected $connectionService;
+
+    /**
+     * Controller constructor
+     */
+    public function __construct(ConnectionService $connectionService)
+    {
+        $this->connectionService = $connectionService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,17 +26,7 @@ class ConnectionController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return $this->connectionService = $connectionService;
     }
 
     /**
@@ -45,17 +47,6 @@ class ConnectionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Connection $connection)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Connection  $connection
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Connection $connection)
     {
         //
     }
