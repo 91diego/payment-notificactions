@@ -27,6 +27,7 @@ class NotificationController extends Controller
      */
     public function index()
     {
+        dd("aaa");
         return $this->notificationService->index();
     }
 

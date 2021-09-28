@@ -26,7 +26,7 @@ class ConnectionController extends Controller
      */
     public function index()
     {
-        return $this->connectionService = $connectionService;
+        // return $this->connectionService = $connectionService;
     }
 
     /**
