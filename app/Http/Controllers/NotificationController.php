@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Connection;
-use App\Services\ConnectionService;
+use App\Models\Notification;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
-class ConnectionController extends Controller
+class NotificationController extends Controller
 {
 
-    protected $connectionService;
+    protected $notificationService;
+
 
     /**
      * Controller constructor
      */
-    public function __construct(ConnectionService $connectionService)
+    public function __construct(NotificationService $notificationService)
     {
-        $this->connectionService = $connectionService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -26,7 +27,8 @@ class ConnectionController extends Controller
      */
     public function index()
     {
-        // return $this->connectionService = $connectionService;
+        dd("aaa");
+        return $this->notificationService->index();
     }
 
     /**
@@ -37,40 +39,40 @@ class ConnectionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // TODO
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Connection  $connection
+     * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function show(Connection $connection)
+    public function show(Notification $notification)
     {
-        //
+        // TODO
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Connection  $connection
+     * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Connection $connection)
+    public function update(Request $request, Notification $notification)
     {
-        //
+        // TODO
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Connection  $connection
+     * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Connection $connection)
+    public function destroy(Notification $notification)
     {
-        //
+        // TODO
     }
 }
