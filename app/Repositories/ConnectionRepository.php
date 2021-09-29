@@ -7,13 +7,6 @@ use App\Models\Connection;
 class ConnectionRepository
 {
 
-    protected $connectionRepository;
-
-    public function __construct(ConnectionRepository $connectionRepository)
-    {
-        $this->connectionRepository = $connectionRepository;
-    }
-
     public function index()
     {
         try {

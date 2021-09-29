@@ -2,10 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Models\Connection;
 use App\Services\ConnectionService;
 use Illuminate\Support\Facades\DB;
-use App\Traits\Response;
-use App\Traits\ValidateRequest;
 
 class NotificationRepository
 {
@@ -14,7 +13,7 @@ class NotificationRepository
     /**
      * Constructor
      */
-    public function __construct(ConnectionService $connectionService)
+    Public function __construct(ConnectionService $connectionService)
     {
         $this->connectionService = $connectionService;
     }
@@ -31,7 +30,6 @@ class NotificationRepository
         $items = null;
         DB::beginTransaction();
         try {
-            ini_set('memory_limit', '1024M');
             $connections = $this->connectionService->index();
             dd($connections);
             DB::commit();

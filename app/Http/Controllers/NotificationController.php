@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
 
+    protected $controllerName = __CLASS__;
     protected $notificationService;
 
-
     /**
-     * Controller constructor
+     * Constructor of Notification Controller
      */
     public function __construct(NotificationService $notificationService)
     {
@@ -27,7 +27,6 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        dd("aaa");
         return $this->notificationService->index();
     }
 
