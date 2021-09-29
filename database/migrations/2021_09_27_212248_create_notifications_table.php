@@ -20,7 +20,7 @@ class CreateNotificationsTable extends Migration
             $table->string('customer_name', 100)->nullable();
             $table->string('department', 80)->nullable();
             $table->string('development', 80)->nullable();
-            $table->enum('status', ['SENT', 'ERROR'])->default('APLICADO');
+            $table->enum('status', ['SENT', 'ERROR'])->default('SENT');
             $table->timestamps();
         });
     }
