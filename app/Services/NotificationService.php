@@ -17,4 +17,10 @@ class NotificationService
     {
         return $this->notificationRepository->index();
     }
+
+    public function store($request)
+    {
+        dd($request);
+        return $this->notificationRepository->store($request);
+    }
 }

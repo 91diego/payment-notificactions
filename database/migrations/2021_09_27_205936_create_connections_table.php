@@ -17,6 +17,7 @@ class CreateConnectionsTable extends Migration
             $table->id();
             $table->string('name', 50);
             $table->string('database', 50);
+            $table->json('notification_cases');
             $table->softDeletes();
             $table->timestamps();
         });

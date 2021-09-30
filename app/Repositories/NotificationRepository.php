@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\Connection;
 use App\Services\ConnectionService;
+use App\Traits\NeodataTrait;
 use Illuminate\Support\Facades\DB;
 
 class NotificationRepository
 {
-    // use Response, ValidateRequest;
+    use NeodataTrait;
 
     /**
      * Constructor
@@ -31,7 +31,11 @@ class NotificationRepository
         DB::beginTransaction();
         try {
             $connections = $this->connectionService->index();
-            dd($connections);
+            foreach ($connections as $value) {
+                // Send database to trait
+                $this->getNeodataPayments($value->notification_cases, $value->name);
+            }
+            // return "ok";
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -49,7 +53,13 @@ class NotificationRepository
      */
     public function store($request)
     {
-        // TODO
+        return "ok store";
+        // TODO, store log on table and send emails
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**

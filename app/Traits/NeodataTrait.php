@@ -2,10 +2,21 @@
 
 namespace App\Traits;
 
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 
 trait NeodataTrait
 {
+
+    protected $notificationService;
+    /**
+     * Constructor
+     */
+    Public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * @param request $request
      */
@@ -36,10 +47,12 @@ trait NeodataTrait
         try {
             // Get Connection
             $connection = $this->setConnection($database);
-            $payments = DB::connection($connection)->select('Select * from dbo.fnPortalWebCredito(?) as credito');
+            // dd([$type, $database, $connection]);
+            // $payments = DB::connection($connection)->select('Select * from dbo.fnPortalWebCredito(?) as credito');
+            return $this->notificationService->store($connection);
             // TODO, send payments to notifications store method
         } catch (\Exception $e) {
-            //throw $th;
+            return $e;
         }
     }
 }
