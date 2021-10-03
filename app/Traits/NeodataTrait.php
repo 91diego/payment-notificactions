@@ -2,10 +2,22 @@
 
 namespace App\Traits;
 
+use App\Services\NotificationService;
+use App\Repositories\NotificationRepository;
 use Illuminate\Support\Facades\DB;
 
 trait NeodataTrait
 {
+
+    protected $notificationService;
+    /**
+     * Constructor
+     */
+    Public function __construct(NotificationRepository $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     /**
      * @param request $request
      */
@@ -30,16 +42,16 @@ trait NeodataTrait
 
     /**
      * Get neodata payments
-     * @param type $type, tipo de correo
+     * @param notificationCases $notificationCases
      */
-    public function getNeodataPayments($type, $database) {
+    public function getNeodataPayments($notificationCases, $database) {
         try {
             // Get Connection
             $connection = $this->setConnection($database);
-            $payments = DB::connection($connection)->select('Select * from dbo.fnPortalWebCredito(?) as credito');
-            // TODO, send payments to notifications store method
-        } catch (\Exception $e) {
-            //throw $th;
+            $customerPayments = DB::connection($connection)->select('Select * from dbo.fnNotificaciones()');
+            return ['notification_cases' => $notificationCases, 'customer_payments' => $customerPayments];
+        } catch (\Error $err) {
+            return $err;
         }
     }
 }

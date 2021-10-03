@@ -27,7 +27,8 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        return $this->notificationService->index();
+        $customerPayments = $this->notificationService->index();
+        return $this->notificationService->store($customerPayments);
     }
 
     /**
@@ -38,7 +39,7 @@ class NotificationController extends Controller
      */
     public function store(Request $request)
     {
-        // TODO
+        return $this->notificationService->store($request->all());
     }
 
     /**
