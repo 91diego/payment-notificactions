@@ -20,7 +20,6 @@ class NotificationService
 
     public function store($request)
     {
-        dd($request);
         return $this->notificationRepository->store($request);
     }
 }
