@@ -17,8 +17,23 @@ class CrmReportsRepository
      */
     public function __construct()
     {
-        $this->bitrixSite = env('BITRIX_SITE', 'https://intranet.idex.cc/rest/1/');
-        $this->bitrixToken = env('BITRIX_TOKEN', 'evcwp69f5yg7gkwc');
+        $this->bitrixSite = env('BITRIX_SITE');
+        $this->bitrixToken = env('BITRIX_TOKEN');
+    }
+
+    /**
+     * Generate leads report
+     * @param phase $phase
+     * PROSPECTO ASIGNADO (STATUS_ID) -> IN_PROCESS
+     * PROSPECTO EN SEGUIMIENTO (STATUS_ID) -> 3
+     * DUPLICADOS (STATUS_ID) -> 5
+     * PENDIENTE (STATUS_ID) -> 4
+     * NO CALIFICA (STATUS_ID) -> JUNK
+     * CALIFICADO (STATUS_ID) -> CONVERTED
+     */
+    public function createLeadsReport($phase)
+    {
+        return $this->getLeads($phase);
     }
 
     /**
