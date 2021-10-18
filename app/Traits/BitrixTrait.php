@@ -20,8 +20,8 @@ trait BitrixTrait
      */
     public function __construct()
     {
-        $this->bitrixSite = env('BITRIX_SITE');
-        $this->bitrixToken = env('BITRIX_TOKEN');
+        $this->bitrixSite = env('BITRIX_SITE', 'https://intranet.idex.cc/rest/1/');
+        $this->bitrixToken = env('BITRIX_TOKEN', 'evcwp69f5yg7gkwc');
     }
 
     /**
@@ -370,7 +370,7 @@ trait BitrixTrait
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-30T00:00:00-05:00");
+            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
             $jsonDeals = $dealsUrl->json();
             for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
             {
