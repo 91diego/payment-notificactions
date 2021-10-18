@@ -29,6 +29,14 @@ class CrmReportsService
     }
 
     /**
+     * Update leads report
+     */
+    public function updateLeadsReport()
+    {
+        return $this->crmReportsRepository->updateLeadsReport();
+    }
+
+    /**
      * Generate comercial report
      */
     public function comercialReport()
