@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Models\LastRecord;
 use App\Models\Lead;
 use DateTime;
 use Exception;
@@ -319,7 +320,37 @@ trait BitrixTrait
     }
 
     /**
-     * Obtiene e inserta leads de acuerdo a la fase
+     * Stages from leads
+     */
+    public function leadsStages($stageId)
+    {
+        switch ($stageId) {
+            case 'IN_PROCESS':
+                $status = 'PROSPECTO ASIGNADO';
+                break;
+            case '3':
+                $status = 'PROSPECTO EN SEGUIMIENTO';
+                break;
+            case '4':
+                $status = 'PENDIENTES';
+                break;
+            case '5':
+                $status = 'DUPLICADOS';
+                break;
+            case 'JUNK':
+                $status = 'NO CALIFICA';
+                break;
+            case 'CONVERTED':
+                $status = 'CALIFICADO';
+                break;
+        }
+        return $status;
+    }
+
+    /**
+     * Get and insert or update.
+     * If phase parameter has a value, insert leads on database
+     * else, update leads for the database.
      * @param phase $phase
      * PROSPECTO ASIGNADO (STATUS_ID) -> IN_PROCESS
      * PROSPECTO EN SEGUIMIENTO (STATUS_ID) -> 3
@@ -333,17 +364,15 @@ trait BitrixTrait
         $status = 'success';
         $code = 200;
         $message = 'Reporte exitoso';
-        // Arreglo con los datos especificos
-        $deals = [];
         // Numero de registros mostrados por peticion
         $rows = 50;
         // Primer registro para mostrar en la peticion
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase");
+            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-30T00:00:00-05:00");
             $jsonDeals = $dealsUrl->json();
-            for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows);$deal++)
+            for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
             {
                 $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
                 $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ? intval($jsonDeals["total"] > intval($firstRow) ? $substractionRows = (intval($jsonDeals["total"] - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($jsonDeals["total"]))) : $substractionRows = $rows;
@@ -355,27 +384,6 @@ trait BitrixTrait
                     $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $jsonDeals["result"][$pushDeal]['ID']);
                     $jsonDeal = $dealUrl->json();
 
-                    switch ($jsonDeal['result']['STATUS_ID']) {
-                        case 'IN_PROCESS':
-                            $status = 'PROSPECTO ASIGNADO';
-                            break;
-                        case '3':
-                            $status = 'PROSPECTO EN SEGUIMIENTO';
-                            break;
-                        case '4':
-                            $status = 'PENDIENTES';
-                            break;
-                        case '5':
-                            $status = 'DUPLICADOS';
-                            break;
-                        case 'JUNK':
-                            $status = 'NO CALIFICA';
-                            break;
-                        case 'CONVERTED':
-                            $status = 'CALIFICADO';
-                            break;
-                    }
-
                     $id = $jsonDeal['result']['ID'];
                     $leadName = $jsonDeal['result']['NAME'] . " " . $jsonDeal['result']['SECOND_NAME'] . " " . $jsonDeal['result']['LAST_NAME'];
                     $origin = $jsonDeal['result']['SOURCE_ID'];
@@ -385,9 +393,10 @@ trait BitrixTrait
                     $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_1560363526781'], 'lead');
                     $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_1559757849830'], 'lead');
                     $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396'], 'lead');
+                    $status = $this->leadsStages($jsonDeal['result']['STATUS_ID']);
                     $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
                     $createdAt = $jsonDeal['result']['DATE_CREATE'];
-                    $modifiedBy = $this->getResponsable($jsonDeal["result"]['MODIFY_BY_ID']);
+                    $createdBy = $this->getResponsable($jsonDeal["result"]['CREATED_BY_ID']);
 
                     if($contact['phone'] == 'Sin numero registrado') {
                         $phone = isset($jsonDeal['result']['PHONE'][0]['VALUE']) || !empty($jsonDeal['result']['PHONE'][0]['VALUE']) ?
@@ -399,23 +408,6 @@ trait BitrixTrait
                         $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
 
-                    /*Lead::updateOrCreate([
-                        'bitrix_id'   => $id,
-                    ],
-                    [
-                        'name' => strtoupper($leadName),
-                        'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
-                        'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                        'origin' => $origin,
-                        'responsable' => strtoupper($responsable['fullname']),
-                        'development' => strtoupper($development),
-                        'sales_channel' => strtoupper($salesChannel),
-                        'purchase_reason' => strtoupper($purchaseReason),
-                        'disqualification_reason' => $disqualificationReason,
-                        'bitrix_created_by' => $modifiedAt,
-                        'bitrix_created_at' => $createdAt,
-                        'bitrix_modified_at' => strtoupper($modifiedBy['fullname']),
-                    ]);*/
                     Lead::create([
                         'bitrix_id'   => $id,
                         'name' => strtoupper($leadName),
@@ -428,26 +420,235 @@ trait BitrixTrait
                         'purchase_reason' => strtoupper($purchaseReason),
                         'disqualification_reason' => $disqualificationReason,
                         'status' => $status,
-                        'bitrix_created_by' => $modifiedAt,
+                        'bitrix_created_by' => strtoupper($createdBy['fullname']),
                         'bitrix_created_at' => $createdAt,
-                        'bitrix_modified_at' => strtoupper($modifiedBy['fullname']),
+                        'bitrix_modified_at' => $modifiedAt,
                     ]);
-                    /*array_push($deals, [
-                        'bitrix_id' => $id,
-                        'name' => $leadName,
-                        'phone' => $contact['phone'],
-                        'email' => $contact['email'],
-                        'origin' => $origin,
-                        'responsable' => $responsable['fullname'],
-                        'development' => $development,
-                        'sales_channel' => $salesChannel,
-                        'purchase_reason' => $purchaseReason,
-                        'disqualification_reason' => $disqualificationReason,
-                        'bitrix_created_by' => $modifiedAt,
-                        'bitrix_created_at' => $createdAt,
-                        'bitrix_modified_at' => $modifiedBy['fullname'],
-                    ]);
-                    dd($deals);*/
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 'error';
+            $code = 400;
+            $message = $e->getMessage();
+        }
+        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
+    }
+
+    /**
+     * Update leads for leads report
+     * @param report $report, LEADS, DEAL-SELL, DEAL-NEGOTIATION
+     */
+    public function updateLead($report)
+    {
+        $status = 'success';
+        $code = 200;
+        $message = '¡Reporte actualizado exitosamente!';
+        // Numero de registros mostrados por peticion
+        $rows = 50;
+        // Primer registro para mostrar en la peticion
+        $firstRow = 0;
+        DB::beginTransaction();
+        try {
+            // Get last lead saved on db
+            $leadByModifiedDate = Lead::orderBy('bitrix_created_at', 'DESC')->get();
+            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_MODIFY]=" . $leadByModifiedDate[0]['bitrix_modified_at'] . "&ORDER[DATE_MODIFY]=DESC");
+            $jsonDeals = $dealsUrl->json();
+            if(count($jsonDeals['result']) < 1)
+            {
+                $message = 'No existen registros actualizados en el CRM';
+
+            }else
+            {
+                for ($deal = 0; $deal < ceil(50 / $rows); $deal++)
+                {
+                    $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
+                    $deal == (intval((ceil($jsonDeals['total'] / $rows)) - 1)) ? intval($jsonDeals['total'] > intval($firstRow) ? $substractionRows = (intval($jsonDeals["total"] - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($jsonDeals["total"]))) : $substractionRows = $rows;
+                    set_time_limit(100000000);
+                    for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
+                    {
+                        // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $jsonDeals
+                        $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $jsonDeals["result"][$pushDeal]['ID']);
+                        $jsonDeal = $dealUrl->json();
+                        $id = $jsonDeal['result']['ID'];
+                        $leadName = $jsonDeal['result']['NAME'] . " " . $jsonDeal['result']['SECOND_NAME'] . " " . $jsonDeal['result']['LAST_NAME'];
+                        $origin = $jsonDeal['result']['SOURCE_ID'];
+                        $contact = $this->getContact($jsonDeal['result']['CONTACT_ID']);
+                        $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
+                        $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_1561502098252'], 'lead');
+                        $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_1560363526781'], 'lead');
+                        $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_1559757849830'], 'lead');
+                        $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396'], 'lead');
+                        $status = $this->leadsStages($jsonDeal['result']['STATUS_ID']);
+                        $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
+                        $createdAt = $jsonDeal['result']['DATE_CREATE'];
+                        $createdBy = $this->getResponsable($jsonDeal["result"]['CREATED_BY_ID']);
+
+                        if($contact['phone'] == 'Sin numero registrado') {
+                            $phone = isset($jsonDeal['result']['PHONE'][0]['VALUE']) || !empty($jsonDeal['result']['PHONE'][0]['VALUE']) ?
+                            $jsonDeal['result']['PHONE'][0]['VALUE'] : 'Sin numero registrado';
+                        }
+
+                        if($contact['email'] == 'Sin correo registrado') {
+                            $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
+                            $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
+                        }
+                        $leadDb = Lead::where('bitrix_id', $id)->where('bitrix_modified_at', '<>', $modifiedAt)->exists();
+                        if($leadDb)
+                        {
+                            DB::table('leads')
+                                ->where('bitrix_id', $id)
+                                ->update([
+                                    'name' => strtoupper($leadName),
+                                    'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                                    'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
+                                    'origin' => $origin,
+                                    'responsable' => strtoupper($responsable['fullname']),
+                                    'development' => strtoupper($development),
+                                    'sales_channel' => strtoupper($salesChannel),
+                                    'purchase_reason' => strtoupper($purchaseReason),
+                                    'disqualification_reason' => $disqualificationReason,
+                                    'bitrix_created_by' => strtoupper($createdBy['fullname']),
+                                    'bitrix_created_at' => $createdAt,
+                                    'bitrix_modified_at' => $modifiedAt,
+                                ]);
+                        }
+                    }
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 'error';
+            $code = 400;
+            $message = $e->getMessage();
+        }
+        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
+    }
+
+    /**
+     * Add new lead on leads report
+     */
+    public function addLead($dbLeads, $bitrixLeads)
+    {
+        $status = 'success';
+        $code = 200;
+        $message = 'Reporte actualizado con exitosamente';
+        // Numero de registros mostrados por peticion
+        $rows = 50;
+        // Primer registro para mostrar en la peticion
+        $firstRow = 0;
+        DB::beginTransaction();
+        try {
+            if ($dbLeads < $bitrixLeads)
+            {
+                // Helps to know how many records will be insert on database,
+                // is the difference between bitrix total and database total.
+                $numberOfRecords = $bitrixLeads - $dbLeads;
+                $bitrixDeals = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&ORDER[ID]=DESC");
+                $result = $bitrixDeals ->json();
+
+                if ($numberOfRecords > 50) {
+                    for ($deal = 0; $deal < ceil($numberOfRecords / $rows); $deal++)
+                    {
+                        $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
+                        $deal == (intval((ceil($numberOfRecords / $rows)) - 1)) ? intval($numberOfRecords > intval($firstRow) ? $substractionRows = (intval($numberOfRecords - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($numberOfRecords))) : $substractionRows = $rows;
+                        set_time_limit(100000000);
+                        for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
+                        {
+                            // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $result
+                            $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $result['result'][$pushDeal]['ID']);
+                            $jsonDeal = $dealUrl->json();
+
+                            $id = $jsonDeal['result']['ID'];
+                            $leadName = $jsonDeal['result']['NAME'] . " " . $jsonDeal['result']['SECOND_NAME'] . " " . $jsonDeal['result']['LAST_NAME'];
+                            $origin = $jsonDeal['result']['SOURCE_ID'];
+                            $contact = $this->getContact($jsonDeal['result']['CONTACT_ID']);
+                            $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
+                            $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_1561502098252'], 'lead');
+                            $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_1560363526781'], 'lead');
+                            $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_1559757849830'], 'lead');
+                            $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396'], 'lead');
+                            $bitrixStatus = $this->leadsStages($jsonDeal['result']['STATUS_ID']);
+                            $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
+                            $createdAt = $jsonDeal['result']['DATE_CREATE'];
+                            $createdBy = $this->getResponsable($jsonDeal["result"]['CREATED_BY_ID']);
+
+                            if($contact['phone'] == 'Sin numero registrado') {
+                                $phone = isset($jsonDeal['result']['PHONE'][0]['VALUE']) || !empty($jsonDeal['result']['PHONE'][0]['VALUE']) ?
+                                $jsonDeal['result']['PHONE'][0]['VALUE'] : 'Sin numero registrado';
+                            }
+
+                            if($contact['email'] == 'Sin correo registrado') {
+                                $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
+                                $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
+                            }
+                            Lead::create([
+                                'bitrix_id'   => $id,
+                                'name' => strtoupper($leadName),
+                                'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                                'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
+                                'origin' => $origin,
+                                'responsable' => strtoupper($responsable['fullname']),
+                                'development' => strtoupper($development),
+                                'sales_channel' => strtoupper($salesChannel),
+                                'purchase_reason' => strtoupper($purchaseReason),
+                                'disqualification_reason' => $disqualificationReason,
+                                'status' => $bitrixStatus,
+                                'bitrix_created_by' => strtoupper($createdBy['fullname']),
+                                'bitrix_created_at' => $createdAt,
+                                'bitrix_modified_at' => $modifiedAt,
+                            ]);
+                        }
+                    }
+                }else {
+                    for ($deal = 0; $deal <= $numberOfRecords; $deal++)
+                    {
+                        // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $result
+                        $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $result['result'][$deal]['ID']);
+                        $jsonDeal = $dealUrl->json();
+
+                        $id = $jsonDeal['result']['ID'];
+                        $leadName = $jsonDeal['result']['NAME'] . " " . $jsonDeal['result']['SECOND_NAME'] . " " . $jsonDeal['result']['LAST_NAME'];
+                        $origin = $jsonDeal['result']['SOURCE_ID'];
+                        $contact = $this->getContact($jsonDeal['result']['CONTACT_ID']);
+                        $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
+                        $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_1561502098252'], 'lead');
+                        $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_1560363526781'], 'lead');
+                        $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_1559757849830'], 'lead');
+                        $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396'], 'lead');
+                        $bitrixStatus = $this->leadsStages($jsonDeal['result']['STATUS_ID']);
+                        $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
+                        $createdAt = $jsonDeal['result']['DATE_CREATE'];
+                        $createdBy = $this->getResponsable($jsonDeal["result"]['CREATED_BY_ID']);
+
+                        if($contact['phone'] == 'Sin numero registrado') {
+                            $phone = isset($jsonDeal['result']['PHONE'][0]['VALUE']) || !empty($jsonDeal['result']['PHONE'][0]['VALUE']) ?
+                            $jsonDeal['result']['PHONE'][0]['VALUE'] : 'Sin numero registrado';
+                        }
+
+                        if($contact['email'] == 'Sin correo registrado') {
+                            $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
+                            $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
+                        }
+                        Lead::create([
+                            'bitrix_id'   => $id,
+                            'name' => strtoupper($leadName),
+                            'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                            'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
+                            'origin' => $origin,
+                            'responsable' => strtoupper($responsable['fullname']),
+                            'development' => strtoupper($development),
+                            'sales_channel' => strtoupper($salesChannel),
+                            'purchase_reason' => strtoupper($purchaseReason),
+                            'disqualification_reason' => $disqualificationReason,
+                            'status' => $bitrixStatus,
+                            'bitrix_created_by' => strtoupper($createdBy['fullname']),
+                            'bitrix_created_at' => $createdAt,
+                            'bitrix_modified_at' => $modifiedAt,
+                        ]);
+                    }
                 }
             }
             DB::commit();

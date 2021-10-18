@@ -1,8 +1,11 @@
 <?php
 namespace App\Repositories;
 
+use App\Models\Lead;
 use App\Traits\BitrixTrait;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class CrmReportsRepository
 {
@@ -34,6 +37,20 @@ class CrmReportsRepository
     public function createLeadsReport($phase)
     {
         return $this->getLeads($phase);
+    }
+
+    /**
+     * Update leads report
+     */
+    public function updateLeadsReport()
+    {
+        $leadsRecordsDb = count(Lead::all());
+        // $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=0&FILTER[STATUS_ID]=3");
+        $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list");
+        $jsonDeals = $dealsUrl->json();
+        $bitrixLeads = $jsonDeals['total'] + 1;
+        $this->addLead($leadsRecordsDb, $bitrixLeads);
+        return $this->updateLead('LEADS');
     }
 
     /**
