@@ -43,7 +43,6 @@ class CrmReportsRepository
     public function updateLeadsReport()
     {
         $leadsRecordsDb = count(Lead::all());
-        // $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=0&FILTER[STATUS_ID]=3");
         $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list");
         $jsonDeals = $dealsUrl->json();
         $bitrixLeads = $jsonDeals['total'] + 1;
