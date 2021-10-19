@@ -4,12 +4,10 @@ namespace App\Repositories;
 use App\Models\Lead;
 use App\Traits\BitrixTrait;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class CrmReportsRepository
 {
-
     use BitrixTrait;
     private $bitrixSite;
     private $bitrixToken;
@@ -20,8 +18,8 @@ class CrmReportsRepository
      */
     public function __construct()
     {
-        $this->bitrixSite = env('BITRIX_SITE');
-        $this->bitrixToken = env('BITRIX_TOKEN');
+        $this->bitrixSite = env('BITRIX_SITE', 'https://intranet.idex.cc/rest/1/');
+        $this->bitrixToken = env('BITRIX_TOKEN', 'evcwp69f5yg7gkwc');
     }
 
     /**
