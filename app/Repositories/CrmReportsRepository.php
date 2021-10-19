@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Http;
 
 class CrmReportsRepository
 {
-
     use BitrixTrait;
     private $bitrixSite;
     private $bitrixToken;
