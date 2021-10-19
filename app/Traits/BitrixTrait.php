@@ -516,7 +516,6 @@ trait BitrixTrait
             DB::rollBack();
             $items = $e->getMessage();
         }
-
         return response()->json($items);
     }
 
