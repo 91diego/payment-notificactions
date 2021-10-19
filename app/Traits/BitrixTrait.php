@@ -442,9 +442,6 @@ trait BitrixTrait
      */
     public function updateLead($report)
     {
-        $status = 'success';
-        $code = 200;
-        $message = '¡Reporte actualizado exitosamente!';
         // Numero de registros mostrados por peticion
         $rows = 50;
         // Primer registro para mostrar en la peticion
@@ -455,11 +452,7 @@ trait BitrixTrait
             $leadByModifiedDate = Lead::orderBy('bitrix_created_at', 'DESC')->get();
             $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_MODIFY]=" . $leadByModifiedDate[0]['bitrix_modified_at'] . "&ORDER[DATE_MODIFY]=DESC");
             $jsonDeals = $dealsUrl->json();
-            if(count($jsonDeals['result']) < 1)
-            {
-                $message = 'No existen registros actualizados en el CRM';
-
-            }else
+            if(count($jsonDeals['result']) > 0)
             {
                 for ($deal = 0; $deal < ceil(50 / $rows); $deal++)
                 {
@@ -517,14 +510,14 @@ trait BitrixTrait
                     }
                 }
             }
+            $items = Lead::all();
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            $status = 'error';
-            $code = 400;
-            $message = $e->getMessage();
+            $items = $e->getMessage();
         }
-        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
+
+        return response()->json($items);
     }
 
     /**
