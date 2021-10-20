@@ -44,7 +44,7 @@ class UpdateLeads extends Command
         $message = "ALL IS OK!!";
         try {
             $leadsRecordsDb = count(Lead::all());
-            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list");
+            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
             $jsonDeals = $dealsUrl->json();
             $bitrixLeads = $jsonDeals['total'] + 1;
             $this->addLead($leadsRecordsDb, $bitrixLeads);
