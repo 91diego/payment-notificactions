@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Models\LastRecord;
+use App\Models\DealSell;
 use App\Models\Lead;
 use DateTime;
 use Exception;
@@ -261,6 +261,28 @@ trait BitrixTrait
     /**
      * Obtiene el nombre del desarrollo del CRM
      * @param int id
+     * @return string development
+     */
+    public function getInterestDevelopment($id)
+    {
+        $fieldsDeals = "$this->bitrixSite$this->bitrixToken/crm.deal.fields";
+        // OBTIENE LA RESPUESTA DE LA API REST BITRIX
+        $responseAPI = file_get_contents($fieldsDeals);
+        // CAMPOS DE LA RESPUESTA
+        $fields = json_decode($responseAPI, true);
+        // NUMERO DE CAMPOS EN LA POSICION DEL ARRAY
+        $development = $fields['result']['UF_CRM_1598033555703']['items'];
+        for ($i = 0; $i < count($development); $i++) {
+            if ($development[$i]['ID'] == $id) {
+                return isset($development[$i]['VALUE']) || !empty($development[$i]['VALUE']) ? $development[$i]['VALUE'] : 'Sin desarrollo de interes';
+            }
+        }
+        return 'Sin desarrollo de interes';
+    }
+
+    /**
+     * Obtiene el nombre del desarrollo del CRM
+     * @param int id
      * @param string type default deal
      * @return string development
      */
@@ -320,6 +342,40 @@ trait BitrixTrait
     }
 
     /**
+     * Get deal stages names
+     * @param stageId $id
+     */
+    public function getStages($id)
+    {
+        $fields = Http::get("$this->bitrixSite$this->bitrixToken/crm.dealcategory.stage.list");
+        $jsonFields = $fields->json();
+        for ($i = 0; $i < count($jsonFields['result']); $i++) {
+            if ($jsonFields['result'][$i]['STATUS_ID'] == $id) {
+                return isset($jsonFields['result'][$i]['NAME']) || !empty($jsonFields['result'][$i]['NAME']) ? $jsonFields['result'][$i]['NAME'] : 'Sin etapa';
+            }
+        }
+    }
+
+    /**
+     * Get deal visit tyep
+     * @param visitId $id
+     */
+    public function getVisitType($id)
+    {
+        $fields = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.fields");
+        $jsonFields = $fields->json();
+        // NUMERO DE CAMPOS EN LA POSICION DEL ARRAY
+        $visitType = $jsonFields['result']['UF_CRM_1580847925']['items'];
+        for ($i = 0; $i < count($visitType); $i++) {
+            if ($visitType[$i]['ID'] == $id) {
+                $type = isset($visitType[$i]['VALUE']) || !empty($visitType[$i]['VALUE']) ? $visitType[$i]['VALUE'] : 'Sin tipo de visita';
+            }
+        }
+        return $type;
+    }
+
+
+    /**
      * Stages from leads
      */
     public function leadsStages($stageId)
@@ -348,6 +404,130 @@ trait BitrixTrait
     }
 
     /**
+     * Get and insert deals on tables
+     * @param category $category
+     * DEAL-SELL, CATEGORY_ID 0
+     * DEAL-NEGOTATION, CATEGORY_ID 1
+     */
+    public function getDeals($category)
+    {
+        $status = 'success';
+        $code = 200;
+        $message = "Reporte generado exitosamente deals $category";
+        // Numero de registros mostrados por peticion
+        $rows = 50;
+        // Primer registro para mostrar en la peticion
+        $firstRow = 0;
+        DB::beginTransaction();
+        try {
+            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?start=$firstRow&FILTER[CATEGORY_ID]=$category");
+            $jsonDeals = $dealsUrl->json();
+            for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
+            {
+                $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
+                $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ? intval($jsonDeals["total"] > intval($firstRow) ? $substractionRows = (intval($jsonDeals["total"] - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($jsonDeals["total"]))) : $substractionRows = $rows;
+
+                set_time_limit(100000000);
+                for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
+                {
+                    // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $jsonDeals
+                    $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.get?ID=" . $jsonDeals["result"][$pushDeal]['ID']);
+                    $jsonDeal = $dealUrl->json();
+
+                    $id = $jsonDeal['result']['ID'];
+                    $leadId = $jsonDeal['result']['LEAD_ID'];
+                    $negotiationSellId = !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'];
+                    $origin = $jsonDeal['result']['SOURCE_ID'];
+                    $stage = $this->getStages($jsonDeal['result']['STAGE_ID']);
+                    $type = $jsonDeal['result']['TYPE_ID'];
+                    $manager = !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'];
+                    $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
+                    $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
+                    $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
+                    $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
+                    $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                    $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
+                    $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
+                    $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
+                    $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396']);
+                    $commentsDisqualification = $jsonDeal['result']['UF_CRM_1573858596']; // UF_CRM_5D03F07FD7E99
+                    $deliveryDateAt = $jsonDeal['result']['UF_CRM_1586290304'];
+                    $newDeliveryDateAt = $jsonDeal['result']['UF_CRM_1586290215'];
+                    $visitedAt = $jsonDeal['result']['UF_CRM_1562191387578'];
+                    $separatedAt = $jsonDeal['result']['UF_CRM_1562355481964'];
+                    $soldAt = $jsonDeal['result']['UF_CRM_1562191592191'];
+                    $visitType =  $this->getVisitType($jsonDeal['result']['UF_CRM_1580847925']);
+                    $createdAt = $jsonDeal['result']['DATE_CREATE'];
+                    $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
+
+                    DealSell::create([
+                        'negociacion_bitrix_id' => $id,
+                        'prospecto_bitrix_id' => $leadId,
+                        'negociacion_venta_bitrix_id' => $negotiationSellId,
+                        'etapa' => $stage,
+                        'tipo' => $type,
+                        'gerente' => $manager,
+                        'responsable' => strtoupper($responsable['fullname']),
+                        'origen' => $origin,
+                        'motivo_compra' => $purchaseReason,
+                        'canal_venta' => strtoupper($salesChannel),
+                        'producto' => $productName,
+                        'precio' => $productPrice,
+                        'motivo_descalificacion' => $disqualificationReason,
+                        'motivo_cancelacion_apartado' => $reasonCancelationSection,
+                        'desarrollo' => strtoupper($development),
+                        'desarrollo_interes' => strtoupper($interestDevelopment),
+                        'tipo_visita' => $visitType,
+                        'negociacion_descalificado_comentarios' => $commentsDisqualification,
+                        'hora_exacta_visita' => $visitedAt,
+                        'apartado_el' => $separatedAt,
+                        'vendido_el' => $soldAt,
+                        'compromiso_entrega_el' => $deliveryDateAt,
+                        'compromiso_entrega_reproyectado_el' => $newDeliveryDateAt,
+                        'bitrix_created_el' => $createdAt,
+                        'bitrix_modificado_el' => $modifiedAt,
+                    ]);
+
+                    /*$x = [
+                        'id' => $jsonDeal['result']['ID'],
+                        'leadId' => $jsonDeal['result']['LEAD_ID'],
+                        'negotiationSellId' => !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'],
+                        'origin' => $jsonDeal['result']['SOURCE_ID'],
+                        'stage' => $this->getStages($jsonDeal['result']['STAGE_ID']),
+                        'type' => $jsonDeal['result']['TYPE_ID'],
+                        'manager' => !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'],
+                        'responsable' => $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']),
+                        'salesChannel' => $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']),
+                        'development' => $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']),
+                        'interestDevelopment' => $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']),
+                        'reasonCancelationSection' => $jsonDeal['result']['UF_CRM_1560811855979'],
+                        'purchaseReason' => $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']),
+                        'productName' => !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'],
+                        'productPrice' => $jsonDeal['result']['UF_CRM_1573066384206'],
+                        'disqualificationReason' => $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396']),
+                        'commentsDisqualification' => $jsonDeal['result']['UF_CRM_1573858596'], // UF_CRM_5D03F07FD7E99
+                        'deliveryDateAt' => $jsonDeal['result']['UF_CRM_1586290304'],
+                        'newDeliveryDateAt' => $jsonDeal['result']['UF_CRM_1586290215'],
+                        'visitedAt' => $jsonDeal['result']['UF_CRM_1562191387578'],
+                        'separatedAt' => $jsonDeal['result']['UF_CRM_1562355481964'],
+                        'soldAt' => $jsonDeal['result']['UF_CRM_1562191592191'],
+                        'visitType' => $this->getVisitType($jsonDeal['result']['UF_CRM_1580847925']),
+                        'createdAt' => $jsonDeal['result']['DATE_CREATE'],
+                    ];
+                    dd($x);*/
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 'error';
+            $code = 400;
+            $message = $e->getMessage();
+        }
+        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
+    }
+
+    /**
      * Get and insert or update.
      * If phase parameter has a value, insert leads on database
      * else, update leads for the database.
@@ -358,6 +538,7 @@ trait BitrixTrait
      * PENDIENTE (STATUS_ID) -> 4
      * NO CALIFICA (STATUS_ID) -> JUNK
      * CALIFICADO (STATUS_ID) -> CONVERTED
+     * PHASE == 0, ALL RECORDS WILL BE RETRIEVE
      */
     public function getLeads($phase)
     {
@@ -370,7 +551,11 @@ trait BitrixTrait
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
+            $dealsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
+            if ($phase == 0)
+            {
+                $dealsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
+            }
             $jsonDeals = $dealsUrl->json();
             for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
             {
@@ -500,6 +685,7 @@ trait BitrixTrait
                                     'responsable' => strtoupper($responsable['fullname']),
                                     'development' => strtoupper($development),
                                     'sales_channel' => strtoupper($salesChannel),
+                                    'status' => $status,
                                     'purchase_reason' => strtoupper($purchaseReason),
                                     'disqualification_reason' => $disqualificationReason,
                                     'bitrix_created_by' => strtoupper($createdBy['fullname']),
