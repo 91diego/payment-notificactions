@@ -488,7 +488,7 @@ trait BitrixTrait
                         'bitrix_created_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
-                    dd($type);
+
                     /*$x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],
