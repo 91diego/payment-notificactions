@@ -461,8 +461,10 @@ trait BitrixTrait
                     $createdAt = $jsonDeal['result']['DATE_CREATE'];
                     $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
 
-                    DealSell::create([
+                    DealSell::updateOrCreate([
                         'negociacion_bitrix_id' => $id,
+                    ],
+                    [
                         'prospecto_bitrix_id' => $leadId,
                         'negociacion_venta_bitrix_id' => $negotiationSellId,
                         'etapa' => $stage,
@@ -488,7 +490,6 @@ trait BitrixTrait
                         'bitrix_created_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
-
                     /*$x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],
@@ -696,8 +697,10 @@ trait BitrixTrait
                         $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
 
-                    Lead::create([
+                    Lead::updateOrCreate([
                         'bitrix_id'   => $id,
+                    ],
+                    [
                         'name' => strtoupper($leadName),
                         'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
