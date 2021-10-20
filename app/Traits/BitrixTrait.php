@@ -697,7 +697,24 @@ trait BitrixTrait
                         $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
 
-                    Lead::updateOrCreate([
+                    Lead::create([
+                        'bitrix_id'   => $id,
+                        'name' => strtoupper($leadName),
+                        'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                        'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
+                        'origin' => $origin,
+                        'responsable' => strtoupper($responsable['fullname']),
+                        'development' => strtoupper($development),
+                        'sales_channel' => strtoupper($salesChannel),
+                        'purchase_reason' => strtoupper($purchaseReason),
+                        'disqualification_reason' => $disqualificationReason,
+                        'status' => $status,
+                        'bitrix_created_by' => strtoupper($createdBy['fullname']),
+                        'bitrix_created_at' => $createdAt,
+                        'bitrix_modified_at' => $modifiedAt,
+                    ]);
+
+                    /*Lead::updateOrCreate([
                         'bitrix_id'   => $id,
                     ],
                     [
@@ -714,7 +731,7 @@ trait BitrixTrait
                         'bitrix_created_by' => strtoupper($createdBy['fullname']),
                         'bitrix_created_at' => $createdAt,
                         'bitrix_modified_at' => $modifiedAt,
-                    ]);
+                    ]);*/
                 }
             }
             DB::commit();
