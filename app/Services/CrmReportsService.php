@@ -15,13 +15,13 @@ class CrmReportsService
 
     /**
      * Generate deal report
-     * @param type $type
+     * @param category $category
      * DEAL-SELL, CATEGORY_ID 0
      * DEAL-NEGOTATION, CATEGORY_ID 1
      */
-    public function createDealReport($type)
+    public function createDealReport($category)
     {
-        return $this->crmReportsRepository->createDealReport($type);
+        return $this->crmReportsRepository->createDealReport($category);
     }
 
     /**
