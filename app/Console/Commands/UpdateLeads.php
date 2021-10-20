@@ -49,6 +49,7 @@ class UpdateLeads extends Command
             $bitrixLeads = $jsonDeals['total'] + 1;
             $this->addLead($leadsRecordsDb, $bitrixLeads);
             $this->updateLead('LEADS');
+
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
