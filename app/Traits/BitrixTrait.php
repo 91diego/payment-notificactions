@@ -362,6 +362,7 @@ trait BitrixTrait
      */
     public function getVisitType($id)
     {
+        $type = "";
         $fields = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.fields");
         $jsonFields = $fields->json();
         // NUMERO DE CAMPOS EN LA POSICION DEL ARRAY
@@ -487,6 +488,7 @@ trait BitrixTrait
                         'bitrix_created_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
+                    dd($type);
                     /*$x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],
@@ -521,7 +523,7 @@ trait BitrixTrait
             DB::rollBack();
             $status = 'error';
             $code = 400;
-            $message = $e->getMessage();
+            $message = $e;
         }
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
