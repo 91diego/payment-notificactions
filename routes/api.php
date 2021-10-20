@@ -12,3 +12,6 @@ Route::get('reporte-comercial', [CrmReportsController::class, 'comercialReport']
 Route::get('crear-reporte-leads/{phase}', [CrmReportsController::class, 'createLeadsReport']);
 // Request this route to update leads on report
 Route::get('actualizar-reporte-leads', [CrmReportsController::class, 'updateLeadsReport']);
+
+// Deals report
+Route::get('crear-reporte-deals/{category}', [CrmReportsController::class, 'createDealReport']);

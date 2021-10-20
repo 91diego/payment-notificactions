@@ -23,6 +23,17 @@ class CrmReportsRepository
     }
 
     /**
+     * Generate deal report
+     * @param category $category
+     * DEAL-SELL, CATEGORY_ID 0
+     * DEAL-NEGOTATION, CATEGORY_ID 1
+     */
+    public function createDealReport($category)
+    {
+        return $this->getDeals($category);
+    }
+
+    /**
      * Generate leads report
      * @param phase $phase
      * PROSPECTO ASIGNADO (STATUS_ID) -> IN_PROCESS

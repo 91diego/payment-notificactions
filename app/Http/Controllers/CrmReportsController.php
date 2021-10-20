@@ -21,6 +21,17 @@ class CrmReportsController extends Controller
     }
 
     /**
+     * Generate deal report
+     * @param type $type
+     * DEAL-SELL, CATEGORY_ID 0
+     * DEAL-NEGOTATION, CATEGORY_ID 1
+     */
+    public function createDealReport($category)
+    {
+        return $this->crmReportsService->createDealReport($category);
+    }
+
+    /**
      * Generate leads report
      * @param phase $phase
      * PROSPECTO ASIGNADO (STATUS_ID) -> IN_PROCESS

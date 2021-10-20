@@ -14,6 +14,17 @@ class CrmReportsService
     }
 
     /**
+     * Generate deal report
+     * @param type $type
+     * DEAL-SELL, CATEGORY_ID 0
+     * DEAL-NEGOTATION, CATEGORY_ID 1
+     */
+    public function createDealReport($type)
+    {
+        return $this->crmReportsRepository->createDealReport($type);
+    }
+
+    /**
      * Generate leads report
      * @param phase $phase
      * PROSPECTO ASIGNADO (STATUS_ID) -> IN_PROCESS
