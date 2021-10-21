@@ -665,13 +665,13 @@ trait BitrixTrait
             for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
             {
                 $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
-                $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ? intval($jsonDeals["total"] > intval($firstRow) ? $substractionRows = (intval($jsonDeals["total"] - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($jsonDeals["total"]))) : $substractionRows = $rows;
-
+                $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ? intval($jsonDeals['total'] > intval($firstRow) ? $substractionRows = (intval($jsonDeals['total'] - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($jsonDeals['total']))) : $substractionRows = $rows;
+                // echo "<br>$substractionRows<br>";
                 set_time_limit(100000000);
                 for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
                 {
                     // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $jsonDeals
-                    $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $jsonDeals["result"][$pushDeal]['ID']);
+                    $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $jsonDeals['result'][$pushDeal]['ID']);
                     $jsonDeal = $dealUrl->json();
 
                     $id = $jsonDeal['result']['ID'];
@@ -698,10 +698,8 @@ trait BitrixTrait
                         $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
 
-                    Lead::updateOrCreate([
+                    Lead::create([
                         'bitrix_id'   => $id,
-                    ],
-                    [
                         'name' => strtoupper($leadName),
                         'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
@@ -716,7 +714,7 @@ trait BitrixTrait
                         'bitrix_created_at' => $createdAt,
                         'bitrix_modified_at' => $modifiedAt,
                     ]);
-
+                    echo "INSERTADO; PAGINA $deal, REGISTRO $pushDeal<br>";
                     /*Lead::updateOrCreate([
                         'bitrix_id'   => $id,
                     ],
