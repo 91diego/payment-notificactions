@@ -714,7 +714,6 @@ trait BitrixTrait
                         'bitrix_modified_at' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $deal, REGISTRO $pushDeal<br>";
-
                     /*Lead::updateOrCreate([
                         'bitrix_id'   => $id,
                     ],
