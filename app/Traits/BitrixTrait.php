@@ -490,6 +490,7 @@ trait BitrixTrait
                         'bitrix_created_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
+
                     /*$x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],
@@ -705,23 +706,6 @@ trait BitrixTrait
                         $email = isset($jsonLead['result']['EMAIL'][0]['VALUE']) || !empty($jsonLead['result']['EMAIL'][0]['VALUE']) ?
                         $jsonLead['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
-
-                    /*Lead::create([
-                        'bitrix_id'   => $id,
-                        'name' => strtoupper($leadName),
-                        'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
-                        'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                        'origin' => $origin,
-                        'responsable' => strtoupper($responsable['fullname']),
-                        'development' => strtoupper($development),
-                        'sales_channel' => strtoupper($salesChannel),
-                        'purchase_reason' => strtoupper($purchaseReason),
-                        'disqualification_reason' => $disqualificationReason,
-                        'status' => $status,
-                        'bitrix_created_by' => strtoupper($createdBy['fullname']),
-                        'bitrix_created_at' => $createdAt,
-                        'bitrix_modified_at' => $modifiedAt,
-                    ]);*/
 
                     Lead::updateOrCreate([
                         'bitrix_id'   => $id,
