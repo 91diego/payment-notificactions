@@ -15,7 +15,7 @@ class CreateLeadsTable extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            $table->integer('bitrix_id');
+            $table->longText('bitrix_id');
             $table->longText('name')->nullable();
             $table->longText('phone')->nullable();
             $table->longText('email')->nullable();
