@@ -662,6 +662,7 @@ trait BitrixTrait
                 $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
             }
             $jsonLeads = $leadsUrl->json();
+            set_time_limit(9000000000)
             for ($lead = 0; $lead < ceil($jsonLeads['total'] / $rows); $lead++)
             {
                 $lead == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
