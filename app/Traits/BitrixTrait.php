@@ -751,7 +751,7 @@ trait BitrixTrait
         DB::beginTransaction();
         try {
             // Get last lead saved on db
-            $leadByModifiedDate = Lead::orderBy('bitrix_created_at', 'DESC')->get();
+            $leadByModifiedDate = Lead::orderBy('bitrix_creado_el', 'DESC')->get();
             $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_MODIFY]=" . $leadByModifiedDate[0]['bitrix_modified_at'] . "&ORDER[DATE_MODIFY]=DESC");
             $jsonDeals = $dealsUrl->json();
             if(count($jsonDeals['result']) > 0)
@@ -789,25 +789,25 @@ trait BitrixTrait
                             $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
                             $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                         }
-                        $leadDb = Lead::where('bitrix_id', $id)->where('bitrix_modified_at', '<>', $modifiedAt)->exists();
+                        $leadDb = Lead::where('bitrix_id', $id)->where('bitrix_modificado_el', '<>', $modifiedAt)->exists();
                         if($leadDb)
                         {
                             DB::table('leads')
                                 ->where('bitrix_id', $id)
                                 ->update([
-                                    'name' => strtoupper($leadName),
-                                    'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                                    'nombre' => strtoupper($leadName),
+                                    'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                                     'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                                    'origin' => $origin,
+                                    'origen' => $origin,
                                     'responsable' => strtoupper($responsable['fullname']),
-                                    'development' => strtoupper($development),
-                                    'sales_channel' => strtoupper($salesChannel),
-                                    'status' => $status,
-                                    'purchase_reason' => strtoupper($purchaseReason),
-                                    'disqualification_reason' => $disqualificationReason,
-                                    'bitrix_created_by' => strtoupper($createdBy['fullname']),
-                                    'bitrix_created_at' => $createdAt,
-                                    'bitrix_modified_at' => $modifiedAt,
+                                    'desarrollo' => strtoupper($development),
+                                    'canal_ventas' => strtoupper($salesChannel),
+                                    'estatus' => $status,
+                                    'motivo_compra' => strtoupper($purchaseReason),
+                                    'motivo_descalificacion' => $disqualificationReason,
+                                    'bitrix_creado_por' => strtoupper($createdBy['fullname']),
+                                    'bitrix_creado_el' => $createdAt,
+                                    'bitrix_modificado_el' => $modifiedAt,
                                 ]);
                         }
                     }
