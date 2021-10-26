@@ -656,7 +656,7 @@ trait BitrixTrait
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
+            $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
             if ($phase == 0)
             {
                 $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
@@ -672,10 +672,10 @@ trait BitrixTrait
                         $substractionRows = (intval($jsonLeads['total'] - intval($firstRow))) :
                             $substractionRows = (intval($firstRow) - intval($jsonLeads['total']))) :
                                 $substractionRows = $rows;
-                $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
+                $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
                 if ($phase == 0)
                 {
-                    $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
+                    $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
                 }
                 $jsonLeads = $leadsUrl->json();
                 for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
@@ -686,7 +686,7 @@ trait BitrixTrait
 
                     $id = $jsonLead['result']['ID'];
                     $leadName = $jsonLead['result']['NAME'] . " " . $jsonLead['result']['SECOND_NAME'] . " " . $jsonLead['result']['LAST_NAME'];
-                    $origin = $jsonLead['result']['SOURCE_ID'];
+                    $origin = $this->getOrigin($jsonLead['result']['SOURCE_ID']);
                     $contact = $this->getContact($jsonLead['result']['CONTACT_ID']);
                     $responsable = $this->getResponsable($jsonLead['result']['ASSIGNED_BY_ID']);
                     $development = $this->getPlaceName($jsonLead['result']['UF_CRM_1561502098252'], 'lead');
@@ -711,19 +711,19 @@ trait BitrixTrait
                         'bitrix_id'   => $id,
                     ],
                     [
-                        'name' => strtoupper($leadName),
-                        'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                        'nombre' => strtoupper($leadName),
+                        'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                        'origin' => $origin,
+                        'origen' => $origin,
                         'responsable' => strtoupper($responsable['fullname']),
-                        'development' => strtoupper($development),
-                        'sales_channel' => strtoupper($salesChannel),
-                        'purchase_reason' => strtoupper($purchaseReason),
-                        'disqualification_reason' => $disqualificationReason,
-                        'status' => $status,
-                        'bitrix_created_by' => strtoupper($createdBy['fullname']),
-                        'bitrix_created_at' => $createdAt,
-                        'bitrix_modified_at' => $modifiedAt,
+                        'desarrollo' => strtoupper($development),
+                        'canal_ventas' => strtoupper($salesChannel),
+                        'motivo_compra' => strtoupper($purchaseReason),
+                        'motivo_descalificacion' => $disqualificationReason,
+                        'estatus' => $status,
+                        'bitrix_creado_por' => strtoupper($createdBy['fullname']),
+                        'bitrix_creado_el' => $createdAt,
+                        'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
                 }

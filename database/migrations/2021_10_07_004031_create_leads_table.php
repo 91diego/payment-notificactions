@@ -16,19 +16,19 @@ class CreateLeadsTable extends Migration
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->longText('bitrix_id');
-            $table->longText('name')->nullable();
-            $table->longText('phone')->nullable();
+            $table->longText('nombre')->nullable();
+            $table->longText('telefono')->nullable();
             $table->longText('email')->nullable();
-            $table->longText('origin')->nullable();
+            $table->longText('origen')->nullable();
             $table->longText('responsable')->nullable();
-            $table->longText('purchase_reason')->nullable();
-            $table->longText('sales_channel')->nullable();
-            $table->longText('development')->nullable();
-            $table->longText('disqualification_reason')->nullable();
-            $table->longText('status')->nullable();
-            $table->longText('bitrix_created_by')->nullable();
-            $table->longText('bitrix_created_at')->nullable();
-            $table->longText('bitrix_modified_at')->nullable();
+            $table->longText('motivo_compra')->nullable();
+            $table->longText('canal_ventas')->nullable();
+            $table->longText('desarrollo')->nullable();
+            $table->longText('motivo_descalificacion')->nullable();
+            $table->longText('estatus')->nullable();
+            $table->longText('bitrix_creado_por')->nullable();
+            $table->longText('bitrix_creado_el')->nullable();
+            $table->longText('bitrix_modificado_el')->nullable();
             $table->timestamps();
         });
     }
