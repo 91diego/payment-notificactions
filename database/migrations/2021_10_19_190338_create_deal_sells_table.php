@@ -38,7 +38,7 @@ class CreateDealSellsTable extends Migration
             $table->longText('vendido_el')->nullable();
             $table->longText('compromiso_entrega_el')->nullable();
             $table->longText('compromiso_entrega_reproyectado_el')->nullable();
-            $table->longText('bitrix_created_el')->nullable();
+            $table->longText('bitrix_creado_el')->nullable();
             $table->longText('bitrix_modificado_el')->nullable();
             $table->timestamps();
         });

@@ -421,24 +421,29 @@ trait BitrixTrait
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?start=$firstRow&FILTER[CATEGORY_ID]=$category");
+            $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?FILTER[CATEGORY_ID]=$category");
             $jsonDeals = $dealsUrl->json();
             for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
             {
                 $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
-                $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ? intval($jsonDeals["total"] > intval($firstRow) ? $substractionRows = (intval($jsonDeals["total"] - intval($firstRow))) : $substractionRows = (intval($firstRow) - intval($jsonDeals["total"]))) : $substractionRows = $rows;
-
+                $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ?
+                    intval($jsonDeals["total"] > intval($firstRow) ?
+                        $substractionRows = (intval($jsonDeals["total"] - intval($firstRow))) :
+                            $substractionRows = (intval($firstRow) - intval($jsonDeals["total"]))) :
+                                $substractionRows = $rows;
+                $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?start=$firstRow&FILTER[CATEGORY_ID]=$category");
+                $jsonDeals = $dealsUrl->json();
                 set_time_limit(100000000);
                 for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
                 {
                     // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $jsonDeals
-                    $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.get?ID=" . $jsonDeals["result"][$pushDeal]['ID']);
+                    $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.get?ID=" . $jsonDeals['result'][$pushDeal]['ID']);
                     $jsonDeal = $dealUrl->json();
 
                     $id = $jsonDeal['result']['ID'];
                     $leadId = $jsonDeal['result']['LEAD_ID'];
                     $negotiationSellId = !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'];
-                    $origin = $jsonDeal['result']['SOURCE_ID'];
+                    $origin = $this->getOrigin($jsonDeal['result']['SOURCE_ID']);
                     $stage = $this->getStages($jsonDeal['result']['STAGE_ID']);
                     $type = $jsonDeal['result']['TYPE_ID'];
                     $manager = !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'];
@@ -487,10 +492,10 @@ trait BitrixTrait
                         'vendido_el' => $soldAt,
                         'compromiso_entrega_el' => $deliveryDateAt,
                         'compromiso_entrega_reproyectado_el' => $newDeliveryDateAt,
-                        'bitrix_created_el' => $createdAt,
+                        'bitrix_creado_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
-
+                    echo "INSERTADO; PAGINA $deal, REGISTRO $pushDeal, ID: $id<br>";
                     /*$x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],

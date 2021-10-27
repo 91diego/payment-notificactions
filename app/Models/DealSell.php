@@ -38,7 +38,7 @@ class DealSell extends Model
         'vendido_el',
         'compromiso_entrega_el',
         'compromiso_entrega_reproyectado_el',
-        'bitrix_created_el',
+        'bitrix_creado_el',
         'bitrix_modificado_el',
     ];
 }
