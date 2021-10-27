@@ -713,7 +713,7 @@ trait BitrixTrait
                         $jsonLead['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
                     Lead::updateOrCreate([
-                        'bitrix_id'   => $id,
+                        'prospecto_bitrix_id'   => $id,
                     ],
                     [
                         'nombre' => strtoupper($leadName),
@@ -794,11 +794,11 @@ trait BitrixTrait
                             $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
                             $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                         }
-                        $leadDb = Lead::where('bitrix_id', $id)->where('bitrix_modificado_el', '<>', $modifiedAt)->exists();
+                        $leadDb = Lead::where('prospecto_bitrix_id', $id)->where('bitrix_modificado_el', '<>', $modifiedAt)->exists();
                         if($leadDb)
                         {
                             DB::table('leads')
-                                ->where('bitrix_id', $id)
+                                ->where('prospecto_bitrix_id', $id)
                                 ->update([
                                     'nombre' => strtoupper($leadName),
                                     'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
@@ -885,7 +885,7 @@ trait BitrixTrait
                                 $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                             }
                             Lead::create([
-                                'bitrix_id'   => $id,
+                                'prospecto_bitrix_id'   => $id,
                                 'name' => strtoupper($leadName),
                                 'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                                 'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
@@ -933,7 +933,7 @@ trait BitrixTrait
                             $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                         }
                         Lead::create([
-                            'bitrix_id'   => $id,
+                            'prospecto_bitrix_id'   => $id,
                             'name' => strtoupper($leadName),
                             'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                             'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
