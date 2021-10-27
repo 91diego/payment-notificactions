@@ -15,7 +15,7 @@ class Lead extends Model
      * @var string[]
      */
     protected $fillable = [
-        'bitrix_id',
+        'prospecto_bitrix_id',
         'nombre',
         'telefono',
         'email',
