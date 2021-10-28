@@ -423,7 +423,7 @@ trait BitrixTrait
         try {
             $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?FILTER[CATEGORY_ID]=$category");
             $jsonDeals = $dealsUrl->json();
-            for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
+            for ($deal = 0; $deal < 2 /*ceil($jsonDeals['total'] / $rows)*/; $deal++)
             {
                 $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
                 $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ?
@@ -712,7 +712,23 @@ trait BitrixTrait
                         $email = isset($jsonLead['result']['EMAIL'][0]['VALUE']) || !empty($jsonLead['result']['EMAIL'][0]['VALUE']) ?
                         $jsonLead['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
-                    Lead::updateOrCreate([
+                    Lead::create([
+                        'prospecto_bitrix_id'   => $id,
+                        'nombre' => strtoupper($leadName),
+                        'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                        'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
+                        'origen' => $origin,
+                        'responsable' => strtoupper($responsable['fullname']),
+                        'desarrollo' => strtoupper($development),
+                        'canal_ventas' => strtoupper($salesChannel),
+                        'motivo_compra' => strtoupper($purchaseReason),
+                        'motivo_descalificacion' => $disqualificationReason,
+                        'estatus' => $status,
+                        'bitrix_creado_por' => strtoupper($createdBy['fullname']),
+                        'bitrix_creado_el' => $createdAt,
+                        'bitrix_modificado_el' => $modifiedAt,
+                    ]);
+                    /*Lead::updateOrCreate([
                         'prospecto_bitrix_id'   => $id,
                     ],
                     [
@@ -729,7 +745,7 @@ trait BitrixTrait
                         'bitrix_creado_por' => strtoupper($createdBy['fullname']),
                         'bitrix_creado_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
-                    ]);
+                    ]);*/
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
                 }
             }
