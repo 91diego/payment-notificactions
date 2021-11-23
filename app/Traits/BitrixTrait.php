@@ -8,6 +8,7 @@ use DateTime;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 trait BitrixTrait
 {
@@ -748,6 +749,12 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);*/
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
+                    $userAccessLog = [
+                        'PAGINA' => $lead,
+                        'REGISTRO' => $pushDeal,
+                        "ID" => $id
+                    ];
+                    array_push($userLog, $userAccessLog);
                 }
             }
             DB::commit();
@@ -760,7 +767,6 @@ trait BitrixTrait
         $userLogs = json_encode($userLog);
         $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
         Storage::append('log.txt', $log);
-        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
 
