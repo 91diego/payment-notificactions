@@ -733,6 +733,12 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
+                    $userAccessLog = [
+                        'PAGINA' => $lead,
+                        'REGISTRO' => $pushDeal,
+                        "ID" => $id
+                    ];
+                    array_push($userLog, $userAccessLog);
                 }
             }
             DB::commit();
