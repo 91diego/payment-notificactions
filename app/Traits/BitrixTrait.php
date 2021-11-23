@@ -652,6 +652,7 @@ trait BitrixTrait
      */
     public function getLeads($phase)
     {
+        $userLog = [];
         $status = 'success';
         $code = 200;
         $message = 'Reporte exitoso';
@@ -756,6 +757,10 @@ trait BitrixTrait
             $code = 400;
             $message = $e->getMessage();
         }
+        $userLogs = json_encode($userLog);
+        $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
+        Storage::append('log.txt', $log);
+        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
 
