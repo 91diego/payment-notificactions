@@ -743,7 +743,7 @@ trait BitrixTrait
         }
         $userLogs = json_encode($userLog);
         $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
-        Storage::append('reenvio_mails.txt', $log);
+        Storage::append('log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
