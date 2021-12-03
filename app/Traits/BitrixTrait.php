@@ -714,7 +714,7 @@ trait BitrixTrait
                         $email = isset($jsonLead['result']['EMAIL'][0]['VALUE']) || !empty($jsonLead['result']['EMAIL'][0]['VALUE']) ?
                         $jsonLead['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
-                    Lead::create([
+                    /*Lead::create([
                         'prospecto_bitrix_id'   => $id,
                         'nombre' => strtoupper($leadName),
                         'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
@@ -729,8 +729,8 @@ trait BitrixTrait
                         'bitrix_creado_por' => strtoupper($createdBy['fullname']),
                         'bitrix_creado_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
-                    ]);
-                    /*Lead::updateOrCreate([
+                    ]);*/
+                    Lead::updateOrCreate([
                         'prospecto_bitrix_id'   => $id,
                     ],
                     [
@@ -747,14 +747,14 @@ trait BitrixTrait
                         'bitrix_creado_por' => strtoupper($createdBy['fullname']),
                         'bitrix_creado_el' => $createdAt,
                         'bitrix_modificado_el' => $modifiedAt,
-                    ]);*/
+                    ]);
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
-                    $userAccessLog = [
+                    /*$userAccessLog = [
                         'PAGINA' => $lead,
                         'REGISTRO' => $pushDeal,
                         "ID" => $id
                     ];
-                    array_push($userLog, $userAccessLog);
+                    array_push($userLog, $userAccessLog);*/
                 }
             }
             DB::commit();
@@ -764,8 +764,8 @@ trait BitrixTrait
             $code = 400;
             $message = $e->getMessage();
         }
-        $userLogs = json_encode($userLog);
-        $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
+        //$userLogs = json_encode($userLog);
+        $log = date("Y-m-d H:i:s") . ", PAGINA: " . $lead . ", REGISTRO: " . $pushDeal  . ", ID: " . $id . ", MENSAJE: " . $message;
         Storage::append('log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
