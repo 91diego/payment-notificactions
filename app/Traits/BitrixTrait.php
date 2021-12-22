@@ -384,22 +384,22 @@ trait BitrixTrait
     {
         switch ($stageId) {
             case 'IN_PROCESS':
-                $status = 'PROSPECTO ASIGNADO';
+                $status = 'Pospecto asignado';
                 break;
             case '3':
-                $status = 'PROSPECTO EN SEGUIMIENTO';
+                $status = 'Prospectos en seguimiento';
                 break;
             case '4':
-                $status = 'PENDIENTES';
+                $status = 'Pendientes';
                 break;
             case '5':
-                $status = 'DUPLICADOS';
+                $status = 'Duplicados';
                 break;
             case 'JUNK':
-                $status = 'NO CALIFICA';
+                $status = 'No califica';
                 break;
             case 'CONVERTED':
-                $status = 'CALIFICADO';
+                $status = 'Calificado';
                 break;
         }
         return $status;
@@ -413,6 +413,7 @@ trait BitrixTrait
      */
     public function getDeals($category)
     {
+	$userLog = [];
         $status = 'success';
         $code = 200;
         $message = "Reporte generado exitosamente deals $category";
@@ -424,7 +425,7 @@ trait BitrixTrait
         try {
             $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?FILTER[CATEGORY_ID]=$category");
             $jsonDeals = $dealsUrl->json();
-            for ($deal = 0; $deal < 2 /*ceil($jsonDeals['total'] / $rows)*/; $deal++)
+            for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
             {
                 $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
                 $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ?
@@ -497,6 +498,12 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $deal, REGISTRO $pushDeal, ID: $id<br>";
+		    $userAccessLog = [
+		    	'PAGINA' => $deal,
+			'REGISTRO' => $pushDeal,
+			'ID' => $id
+		    ];
+		    array_push($userLog, $userAccessLog);
                     /*$x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],
@@ -533,6 +540,9 @@ trait BitrixTrait
             $code = 400;
             $message = $e;
         }
+	$userLogs = json_encode($userLog);
+	$log = date("Y-m-d H:i:s") . ", NEGOCIACION VENTAS: $userLogs $message";
+	Storage::append('negociacion_ventas_log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
 
@@ -800,7 +810,7 @@ trait BitrixTrait
                         $jsonDeal = $dealUrl->json();
                         $id = $jsonDeal['result']['ID'];
                         $leadName = $jsonDeal['result']['NAME'] . " " . $jsonDeal['result']['SECOND_NAME'] . " " . $jsonDeal['result']['LAST_NAME'];
-                        $origin = $jsonDeal['result']['SOURCE_ID'];
+                        $origin = $this->getOrigin($jsonDeal['result']['SOURCE_ID']);
                         $contact = $this->getContact($jsonDeal['result']['CONTACT_ID']);
                         $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
                         $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_1561502098252'], 'lead');

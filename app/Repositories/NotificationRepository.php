@@ -134,14 +134,14 @@ class NotificationRepository
         // ESTE EL EMIAL DEL CLIENTE => $data[$i]["email"]
         //$bccEmails = ['ygomez@idex.cc','soportecrm@idex.cc','bat@idex.cc','dgonzalez@milktech.com','cmata@idex.cc']; // Listado de emails bcc
         $bccEmails = ['ygomez@idex.cc','diegoaglez91@gmail.com']; // Listado de emails bcc
-        try {
+	 try {
             // ESTE EL EMIAL DEL CLIENTE => $data[$i]["email"]
             Mail::to("dgonzalez@milktech.io")
             // Mail::to($data[$i]["email"]) // esta linea contiene el array con los emails de los clientes
             ->bcc($bccEmails) // las lineas con bcc es el envio con copia oculta
             ->send(new PaymentNotification($accountStatus, $lastPayment, $balanceDue, $totalPayment, $pathPDF, $mailSubject));
         } catch (\Exception $error) {
-            return $error->getMessage();
+            dd($error->getMessage());
         }
         return $totalPayment;
     }
@@ -208,9 +208,9 @@ class NotificationRepository
                                 $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAnuva);
                             }
                             // test
-                            /*if ($customer->diferencia_real_dias == 538 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
+                            if ($customer->diferencia_real_dias == -294 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
                                 $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAnuva);
-                            }*/
+                            }
                         }
                         break;
 
