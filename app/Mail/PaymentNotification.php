@@ -16,6 +16,11 @@ class PaymentNotification extends Mailable
     public $informacionPagos;
     public $pdf;
     public $referencia;
+    public $logo;
+    public $cuenta;
+    public $banco;
+    public $clabe;
+    public $titular;
     public $acumuladoSaldo;
     public $subject;
 
@@ -30,6 +35,10 @@ class PaymentNotification extends Mailable
         $layoutEstadoCuenta = [];
         // Contiene el logo del desarrollo
         $logoDesarrollo = "";
+        $cuentaDesarrollo = "";
+        $bancoDesarrollo = "";
+        $clabeDesarrollo = "";
+        $titularDesarrollo = "";
         $pagoMensual = "";
         $this->sendMailCobranza = $data;
         $this->accountStatus = $data;
@@ -66,11 +75,29 @@ class PaymentNotification extends Mailable
             //dd([$value['customer_information'], $value['customer_account_status']]);
         }
 
-        //dd($this->accountStatus['customer_account_status']['fecha_pago']);
-
         // SE ASIGNA EL LOGOTIPO DEL DESARROLLO EN EL ESTADO DE CUENTA
-        if ($this->accountStatus['customer_information']['desarrollo'] === "Anuva") {
-            $logoDesarrollo = asset('images/Anuva.jpg');
+        switch ($this->accountStatus['customer_information']['desarrollo']) {
+            case 'Anuva':
+                $cuentaDesarrollo = "65-50725502-0";
+                $bancoDesarrollo = "SANTANDER";
+                $clabeDesarrollo = "014320655072550201";
+                $titularDesarrollo = "NACIONES UNIDAS CAPITAL SAPI DE CV";
+                $logoDesarrollo = "https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/57719a0d-e7ae-4677-bd3b-b33caeba75ea.jpg";
+                break;
+            case 'Brasilia':
+                $cuentaDesarrollo = "";
+                $bancoDesarrollo = "";
+                $clabeDesarrollo = "";
+                $titularDesarrollo = "";
+                $logoDesarrollo = "https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/57719a0d-e7ae-4677-bd3b-b33caeba75ea.jpg";
+                break;
+            case 'Aladra':
+                $cuentaDesarrollo = "";
+                $bancoDesarrollo = "";
+                $clabeDesarrollo = "";
+                $titularDesarrollo = "";
+                $logoDesarrollo = "https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/57719a0d-e7ae-4677-bd3b-b33caeba75ea.jpg";
+                break;
         }
 
         /* DATOS GENERALES */
@@ -92,6 +119,11 @@ class PaymentNotification extends Mailable
         $referenciaPago = $viviendaReferencia[3].' '.$nombreClienteReferencia[0].''.$nombreClienteReferencia[2];
         $this->referencia = $referenciaPago;
         $this->acumuladoSaldo = $saldoVencido;
+        $this->logo = $logoDesarrollo;
+        $this->cuenta = $cuentaDesarrollo;
+        $this->banco = $bancoDesarrollo;
+        $this->clabe = $clabeDesarrollo;
+        $this->titular = $titularDesarrollo;
         $diasAntesPago = $this->accountStatus['customer_information']["dias_antes_de_pago"];
         /* FIN DATOS GENERALES */
         // GENERACION DEL PDF
@@ -113,6 +145,11 @@ class PaymentNotification extends Mailable
         return $this->subject($this->subject)
         ->view('payment_notifications.payment_notification', [
             'cliente' => $this->accountStatus['customer_information']['cliente'],
+            'logo' => $this->logo,
+            'cuenta' => $this->cuenta,
+            'banco' => $this->banco,
+            'clabe' => $this->clabe,
+            'titular' => $this->titular,
             'torre' => $this->accountStatus['customer_information']['torre'],
             'desarrollo' => $this->accountStatus['customer_information']['desarrollo'],
             'fecha_pago' => $this->accountStatus['customer_information']['fecha_pago'],
@@ -121,8 +158,8 @@ class PaymentNotification extends Mailable
             'dias_antes_pago' => $this->accountStatus['customer_information']['dias_antes_de_pago'],
             'acumulado_saldo_vencido' => $this->acumuladoSaldo
         ])->attach($this->path, [
-            'as' => 'estado_de_cuenta_'.$this->accountStatus['customer_information']['cliente'].'.pdf',
-            'mime' => 'application/pdf',
+                'as' => 'estado_de_cuenta_'.$this->accountStatus['customer_information']['cliente'].'.pdf',
+                'mime' => 'application/pdf',
             ]);
     }
 }

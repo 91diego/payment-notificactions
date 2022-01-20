@@ -384,27 +384,26 @@ trait BitrixTrait
     {
         switch ($stageId) {
             case 'IN_PROCESS':
-                $status = 'PROSPECTO ASIGNADO';
+                $status = 'Pospecto asignado';
                 break;
             case '3':
-                $status = 'PROSPECTO EN SEGUIMIENTO';
+                $status = 'Prospectos en seguimiento';
                 break;
             case '4':
-                $status = 'PENDIENTES';
+                $status = 'Pendientes';
                 break;
             case '5':
-                $status = 'DUPLICADOS';
+                $status = 'Duplicados';
                 break;
             case 'JUNK':
-                $status = 'NO CALIFICA';
+                $status = 'No califica';
                 break;
             case 'CONVERTED':
-                $status = 'CALIFICADO';
+                $status = 'Calificado';
                 break;
         }
         return $status;
     }
-
     /**
      * Get and insert deals on tables
      * @param category $category
@@ -413,6 +412,7 @@ trait BitrixTrait
      */
     public function getDeals($category)
     {
+        $userLog = [];
         $status = 'success';
         $code = 200;
         $message = "Reporte generado exitosamente deals $category";
@@ -497,33 +497,12 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $deal, REGISTRO $pushDeal, ID: $id<br>";
-                    /*$x = [
-                        'id' => $jsonDeal['result']['ID'],
-                        'leadId' => $jsonDeal['result']['LEAD_ID'],
-                        'negotiationSellId' => !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'],
-                        'origin' => $jsonDeal['result']['SOURCE_ID'],
-                        'stage' => $this->getStages($jsonDeal['result']['STAGE_ID']),
-                        'type' => $jsonDeal['result']['TYPE_ID'],
-                        'manager' => !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'],
-                        'responsable' => $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']),
-                        'salesChannel' => $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']),
-                        'development' => $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']),
-                        'interestDevelopment' => $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']),
-                        'reasonCancelationSection' => $jsonDeal['result']['UF_CRM_1560811855979'],
-                        'purchaseReason' => $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']),
-                        'productName' => !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'],
-                        'productPrice' => $jsonDeal['result']['UF_CRM_1573066384206'],
-                        'disqualificationReason' => $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396']),
-                        'commentsDisqualification' => $jsonDeal['result']['UF_CRM_1573858596'], // UF_CRM_5D03F07FD7E99
-                        'deliveryDateAt' => $jsonDeal['result']['UF_CRM_1586290304'],
-                        'newDeliveryDateAt' => $jsonDeal['result']['UF_CRM_1586290215'],
-                        'visitedAt' => $jsonDeal['result']['UF_CRM_1562191387578'],
-                        'separatedAt' => $jsonDeal['result']['UF_CRM_1562355481964'],
-                        'soldAt' => $jsonDeal['result']['UF_CRM_1562191592191'],
-                        'visitType' => $this->getVisitType($jsonDeal['result']['UF_CRM_1580847925']),
-                        'createdAt' => $jsonDeal['result']['DATE_CREATE'],
+                    $userAccessLog = [
+                        'PAGINA' => $deal,
+                        'REGISTRO' => $pushDeal,
+                        "ID" => $id
                     ];
-                    dd($x);*/
+                    array_push($userLog, $userAccessLog);
                 }
             }
             DB::commit();
@@ -533,6 +512,9 @@ trait BitrixTrait
             $code = 400;
             $message = $e;
         }
+        $userLogs = json_encode($userLog);
+        $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
+        Storage::append('negociacion_ventas_log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
 
@@ -564,6 +546,7 @@ trait BitrixTrait
                         // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $jsonDeals
                         $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.get?ID=" . $jsonDeals['result'][$pushDeal]['ID']);
                         $jsonDeal = $dealUrl->json();
+
                         $id = $jsonDeal['result']['ID'];
                         $leadId = $jsonDeal['result']['LEAD_ID'];
                         $negotiationSellId = !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'];
@@ -748,8 +731,8 @@ trait BitrixTrait
             $code = 400;
             $message = $e->getMessage();
         }
-        $userLogs = json_encode($userLog);
-        $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
+        //$userLogs = json_encode($userLog);
+        $log = date("Y-m-d H:i:s") . ", PAGINA: " . $lead . ", REGISTRO: " . $pushDeal  . ", ID: " . $id . ", MENSAJE: " . $message;
         Storage::append('log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
@@ -784,7 +767,7 @@ trait BitrixTrait
                         $jsonDeal = $dealUrl->json();
                         $id = $jsonDeal['result']['ID'];
                         $leadName = $jsonDeal['result']['NAME'] . " " . $jsonDeal['result']['SECOND_NAME'] . " " . $jsonDeal['result']['LAST_NAME'];
-                        $origin = $jsonDeal['result']['SOURCE_ID'];
+                        $origin = $this->getOrigin($jsonDeal['result']['SOURCE_ID']);
                         $contact = $this->getContact($jsonDeal['result']['CONTACT_ID']);
                         $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
                         $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_1561502098252'], 'lead');
