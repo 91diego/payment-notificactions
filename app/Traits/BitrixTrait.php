@@ -1,4 +1,4 @@
-<?php
+Æ<?php
 
 namespace App\Traits;
 
@@ -404,7 +404,6 @@ trait BitrixTrait
         }
         return $status;
     }
-
     /**
      * Get and insert deals on tables
      * @param category $category
@@ -504,7 +503,7 @@ trait BitrixTrait
 			'ID' => $id
 		    ];
 		    array_push($userLog, $userAccessLog);
-                    /*$x = [
+                    $x = [
                         'id' => $jsonDeal['result']['ID'],
                         'leadId' => $jsonDeal['result']['LEAD_ID'],
                         'negotiationSellId' => !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'],
@@ -520,17 +519,7 @@ trait BitrixTrait
                         'purchaseReason' => $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']),
                         'productName' => !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'],
                         'productPrice' => $jsonDeal['result']['UF_CRM_1573066384206'],
-                        'disqualificationReason' => $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396']),
-                        'commentsDisqualification' => $jsonDeal['result']['UF_CRM_1573858596'], // UF_CRM_5D03F07FD7E99
-                        'deliveryDateAt' => $jsonDeal['result']['UF_CRM_1586290304'],
-                        'newDeliveryDateAt' => $jsonDeal['result']['UF_CRM_1586290215'],
-                        'visitedAt' => $jsonDeal['result']['UF_CRM_1562191387578'],
-                        'separatedAt' => $jsonDeal['result']['UF_CRM_1562355481964'],
-                        'soldAt' => $jsonDeal['result']['UF_CRM_1562191592191'],
-                        'visitType' => $this->getVisitType($jsonDeal['result']['UF_CRM_1580847925']),
-                        'createdAt' => $jsonDeal['result']['DATE_CREATE'],
                     ];
-                    dd($x);*/
                 }
             }
             DB::commit();
@@ -574,6 +563,7 @@ trait BitrixTrait
                         // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $jsonDeals
                         $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.get?ID=" . $jsonDeals['result'][$pushDeal]['ID']);
                         $jsonDeal = $dealUrl->json();
+
                         $id = $jsonDeal['result']['ID'];
                         $leadId = $jsonDeal['result']['LEAD_ID'];
                         $negotiationSellId = !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'];

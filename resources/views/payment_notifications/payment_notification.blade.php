@@ -24,7 +24,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td class="mcnImageContent" valign="top" style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;">
-                                                                    <img align="center" alt="" src="https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/57719a0d-e7ae-4677-bd3b-b33caeba75ea.jpg" width="564" style="max-width:4167px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
+                                                                    <img align="center" alt="" src="{{ $logo }}" width="564" style="max-width:4167px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -121,12 +121,12 @@
                                                                             <tr>
                                                                                 <td valign="top" class="mcnTextContent" style="padding: 18px;color: #F2F2F2;font-family: Helvetica;font-size: 14px;font-weight: normal;text-align: center;">
                                                                                     <div style="text-align: center;"><strong><span style="font-size:16px"><span style="font-family:source sans pro,helvetica neue,helvetica,arial,sans-serif"><span style="color:#33cccc">Para depósitos con cheque o transferencia en ventanilla:</span><br>
-																						Cuenta: 65-50725502-0
-																						Banco: SANTANDER
+																						Cuenta: {{ $cuenta }}
+																						Banco: {{ $banco }}
 																						<br><br>
 																						<span style="color:#33cccc">Para depósito con cheque o&nbsp;transferencia en ventanilla:</span><br>
-																						CLABE: 014320655072550201<br>
-																						Nombre de Titular: NACIONES UNIDAS CAPITAL SAPI DE CV<br>
+																						CLABE: {{ $clabe }}<br>
+																						Nombre de Titular: {{ $titular }}<br>
 																						Referencia: {{ $referencia_pago }}<br>
 																					</div>
                                                                                 </td>
