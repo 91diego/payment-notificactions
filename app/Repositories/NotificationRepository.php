@@ -207,7 +207,7 @@ class NotificationRepository
                             $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAnuva);
                         }
                         // test
-                        if ($customer->diferencia_real_dias == 538 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
+                        if ($customer->diferencia_real_dias == 798 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
                             $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAnuva);
                         }
                     }
@@ -232,7 +232,7 @@ class NotificationRepository
                             $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAladra);
                         }
                         // test
-                        if ($customer->diferencia_real_dias == 538 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
+                        if ($customer->diferencia_real_dias == 798 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
                             $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAladra);
                         }
                     }

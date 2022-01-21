@@ -1,4 +1,4 @@
-Æ<?php
+<?php
 
 namespace App\Traits;
 
