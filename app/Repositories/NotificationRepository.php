@@ -134,7 +134,7 @@ class NotificationRepository
         }
         // ESTE EL EMIAL DEL CLIENTE => $data[$i]["email"]
         //$bccEmails = ['ygomez@idex.cc','soportecrm@idex.cc','bat@idex.cc','dgonzalez@milktech.com','cmata@idex.cc']; // Listado de emails bcc
-        $bccEmails = [/*'ygomez@idex.cc',*/'diegoaglez91@gmail.com']; // Listado de emails bcc
+        $bccEmails = ['ygomez@idex.cc', 'soportecrm@idex.cc', 'diegoaglez91@gmail.com']; // Listado de emails bcc
         try {
             // ESTE EL EMIAL DEL CLIENTE => $data[$i]["email"]
             Mail::to("dgonzalez@milktech.io")
@@ -142,7 +142,7 @@ class NotificationRepository
             ->bcc($bccEmails) // las lineas con bcc es el envio con copia oculta
             ->send(new PaymentNotification($accountStatus, $lastPayment, $balanceDue, $totalPayment, $pathPDF, $mailSubject));
         } catch (\Exception $error) {
-            dd($error->getMessage());
+            return $error->getMessage();
         }
         return [
             "cliente" => $accountStatus['customer_information']['cliente'],
