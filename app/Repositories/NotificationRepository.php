@@ -7,6 +7,7 @@ use App\Services\ConnectionService;
 use App\Traits\NeodataTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class NotificationRepository
 {
@@ -143,7 +144,11 @@ class NotificationRepository
         } catch (\Exception $error) {
             dd($error->getMessage());
         }
-        return $totalPayment;
+        return [
+            "cliente" => $accountStatus['customer_information']['cliente'],
+            "desarrollo" => $accountStatus['customer_information']['desarrollo'],
+            "email" => $accountStatus['customer_information']['email'],
+        ];
     }
 
     /**
@@ -158,32 +163,46 @@ class NotificationRepository
          * And fecha de entrega equals to CURRENT DATE
          */
         try {
+            $acountLogs = [];
+            $status = 'success';
+            $code = 200;
+            $message = "Notificaciones enviadas";
             $pathPDFBrasilia = storage_path().'/notificaciones_cobranza/brasilia/edo_cuenta.pdf';
             $pathPDFAnuva = storage_path().'/notificaciones_cobranza/anuva/edo_cuenta.pdf';
             $pathPDFAladra = storage_path().'/notificaciones_cobranza/aladra/edo_cuenta.pdf';
             foreach ($request as $value) {
+
                 if ($value['develop_name'] == 'BRASILIA') {
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
-                        // dd($value['items']['customer_payments']);
                         if ($customer->diferencia_real_dias == -7 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFBrasilia);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFBrasilia));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 7 days after payment
                         if ($customer->diferencia_real_dias == 7 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFBrasilia);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFBrasilia));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 90 days after payment
                         if ($customer->diferencia_real_dias == 90 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFBrasilia);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFBrasilia));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 120 days after payment
                         if ($customer->diferencia_real_dias == 120 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFBrasilia);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFBrasilia));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // test
-                        if ($customer->diferencia_real_dias == 651 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFBrasilia);
+                        if ($customer->diferencia_real_dias == 652 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFBrasilia));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                     }
                 }
@@ -192,23 +211,33 @@ class NotificationRepository
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
                         if ($customer->diferencia_real_dias == -7 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFAnuva);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFAnuva));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 7 days after payment
                         if ($customer->diferencia_real_dias == 7 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFAnuva);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFAnuva));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 90 days after payment
                         if ($customer->diferencia_real_dias == 90 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFAnuva);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFAnuva));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 120 days after payment
                         if ($customer->diferencia_real_dias == 120 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAnuva);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAnuva));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // test
                         if ($customer->diferencia_real_dias == 798 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAnuva);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAnuva));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                     }
                 }
@@ -217,31 +246,44 @@ class NotificationRepository
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
                         if ($customer->diferencia_real_dias == -7 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFAladra);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFAladra));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 7 days after payment
                         if ($customer->diferencia_real_dias == 7 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFAladra);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFAladra));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 90 days after payment
                         if ($customer->diferencia_real_dias == 90 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFAladra);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFAladra));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // 120 days after payment
                         if ($customer->diferencia_real_dias == 120 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAladra);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAladra));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                         // test
                         if ($customer->diferencia_real_dias == 798 && $customer->concepto == 'PLAN DEL CREDITO- 1') {
-                            $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAladra);
+                            array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAladra));
+                        }else {
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
                         }
                     }
                 }
-                // return $value['items']['customer_payments'][30]->concepto;
             }
-            return 'Store OK!';
         } catch (\Exception $e) {
-            return $e;
+            $message = $e->getMessage();;
+            return $e->getMessage();;
         }
+        $acountLog = json_encode($acountLogs);
+        $log = date("Y-m-d H:i:s") . ", Log estados de cuenta: $acountLog $message";
+        Storage::append('log_envio_estados_de_cuenta.txt', $log);
+        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
 }
