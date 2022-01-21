@@ -237,35 +237,11 @@ class NotificationRepository
                         }
                     }
                 }
-
                 // return $value['items']['customer_payments'][30]->concepto;
-                /*switch ($value['develop_name']) {
-                    case 'BRASILIA':
-
-                        break;
-
-                    case 'ANUVA':
-
-                        break;
-
-                    case 'ALADRA':
-
-                        break;
-                }*/
             }
             return 'Store OK!';
         } catch (\Exception $e) {
             return $e;
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     */
-    public function show($id)
-    {
-        // TODO
     }
 }
