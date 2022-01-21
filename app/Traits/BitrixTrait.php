@@ -412,7 +412,7 @@ trait BitrixTrait
      */
     public function getDeals($category)
     {
-        $userLog = [];
+	$userLog = [];
         $status = 'success';
         $code = 200;
         $message = "Reporte generado exitosamente deals $category";
@@ -497,12 +497,29 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $deal, REGISTRO $pushDeal, ID: $id<br>";
-                    $userAccessLog = [
-                        'PAGINA' => $deal,
-                        'REGISTRO' => $pushDeal,
-                        "ID" => $id
+		    $userAccessLog = [
+		    	'PAGINA' => $deal,
+			'REGISTRO' => $pushDeal,
+			'ID' => $id
+		    ];
+		    array_push($userLog, $userAccessLog);
+                    $x = [
+                        'id' => $jsonDeal['result']['ID'],
+                        'leadId' => $jsonDeal['result']['LEAD_ID'],
+                        'negotiationSellId' => !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'],
+                        'origin' => $jsonDeal['result']['SOURCE_ID'],
+                        'stage' => $this->getStages($jsonDeal['result']['STAGE_ID']),
+                        'type' => $jsonDeal['result']['TYPE_ID'],
+                        'manager' => !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'],
+                        'responsable' => $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']),
+                        'salesChannel' => $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']),
+                        'development' => $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']),
+                        'interestDevelopment' => $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']),
+                        'reasonCancelationSection' => $jsonDeal['result']['UF_CRM_1560811855979'],
+                        'purchaseReason' => $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']),
+                        'productName' => !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'],
+                        'productPrice' => $jsonDeal['result']['UF_CRM_1573066384206'],
                     ];
-                    array_push($userLog, $userAccessLog);
                 }
             }
             DB::commit();
@@ -512,9 +529,9 @@ trait BitrixTrait
             $code = 400;
             $message = $e;
         }
-        $userLogs = json_encode($userLog);
-        $log = date("Y-m-d H:i:s") . ", INFORMACION: $userLogs $message";
-        Storage::append('negociacion_ventas_log.txt', $log);
+	$userLogs = json_encode($userLog);
+	$log = date("Y-m-d H:i:s") . ", NEGOCIACION VENTAS: $userLogs $message";
+	Storage::append('negociacion_ventas_log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
 
@@ -697,6 +714,22 @@ trait BitrixTrait
                         $email = isset($jsonLead['result']['EMAIL'][0]['VALUE']) || !empty($jsonLead['result']['EMAIL'][0]['VALUE']) ?
                         $jsonLead['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
+                    /*Lead::create([
+                        'prospecto_bitrix_id'   => $id,
+                        'nombre' => strtoupper($leadName),
+                        'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                        'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
+                        'origen' => $origin,
+                        'responsable' => strtoupper($responsable['fullname']),
+                        'desarrollo' => strtoupper($development),
+                        'canal_ventas' => strtoupper($salesChannel),
+                        'motivo_compra' => strtoupper($purchaseReason),
+                        'motivo_descalificacion' => $disqualificationReason,
+                        'estatus' => $status,
+                        'bitrix_creado_por' => strtoupper($createdBy['fullname']),
+                        'bitrix_creado_el' => $createdAt,
+                        'bitrix_modificado_el' => $modifiedAt,
+                    ]);*/
                     Lead::updateOrCreate([
                         'prospecto_bitrix_id'   => $id,
                     ],
@@ -716,12 +749,12 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
-                    $userAccessLog = [
+                    /*$userAccessLog = [
                         'PAGINA' => $lead,
                         'REGISTRO' => $pushDeal,
                         "ID" => $id
                     ];
-                    array_push($userLog, $userAccessLog);
+                    array_push($userLog, $userAccessLog);*/
                 }
             }
             DB::commit();
