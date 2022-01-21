@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('update:leads')->everyTenMinutes();
+        $schedule->command('account:sending')->dailyAt('09:00');
     }
 
     /**
