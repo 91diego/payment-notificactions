@@ -158,9 +158,9 @@ class NotificationRepository
          * And fecha de entrega equals to CURRENT DATE
          */
         try {
-            $pathPDFBrasilia = storage_path().'\notificaciones_cobranza\brasilia\edo_cuenta.pdf';
-            $pathPDFAnuva = storage_path().'\notificaciones_cobranza\anuva\edo_cuenta.pdf';
-            $pathPDFAladra = storage_path().'\notificaciones_cobranza\aladra\edo_cuenta.pdf';
+            $pathPDFBrasilia = storage_path().'/notificaciones_cobranza/brasilia/edo_cuenta.pdf';
+            $pathPDFAnuva = storage_path().'/notificaciones_cobranza/anuva/edo_cuenta.pdf';
+            $pathPDFAladra = storage_path().'/notificaciones_cobranza/aladra/edo_cuenta.pdf';
             foreach ($request as $value) {
                 if ($value['develop_name'] == 'BRASILIA') {
                     foreach ($value['items']['customer_payments'] as $customer) {
@@ -237,35 +237,11 @@ class NotificationRepository
                         }
                     }
                 }
-
                 // return $value['items']['customer_payments'][30]->concepto;
-                /*switch ($value['develop_name']) {
-                    case 'BRASILIA':
-
-                        break;
-
-                    case 'ANUVA':
-
-                        break;
-
-                    case 'ALADRA':
-
-                        break;
-                }*/
             }
             return 'Store OK!';
         } catch (\Exception $e) {
             return $e;
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     */
-    public function show($id)
-    {
-        // TODO
     }
 }
