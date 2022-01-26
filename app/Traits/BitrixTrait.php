@@ -424,7 +424,7 @@ trait BitrixTrait
         try {
             $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?FILTER[CATEGORY_ID]=$category");
             $jsonDeals = $dealsUrl->json();
-            for ($deal = 0; $deal < ceil($jsonDeals['total'] / $rows); $deal++)
+            for ($deal = 0; $deal <= ceil($jsonDeals['total'] / $rows); $deal++)
             {
                 $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
                 $deal == (intval((ceil($jsonDeals["total"] / $rows)) - 1)) ?
@@ -474,7 +474,7 @@ trait BitrixTrait
                         'prospecto_bitrix_id' => $leadId,
                         'negociacion_venta_bitrix_id' => $negotiationSellId,
                         'etapa' => $stage,
-                        'tipo' => $type,
+                        // 'tipo' => $type,
                         'gerente' => $manager,
                         'responsable' => strtoupper($responsable['fullname']),
                         'origen' => $origin,
@@ -586,7 +586,7 @@ trait BitrixTrait
                                     'prospecto_bitrix_id' => $leadId,
                                     'negociacion_venta_bitrix_id' => $negotiationSellId,
                                     'etapa' => $stage,
-                                    'tipo' => $type,
+                                    //'tipo' => $type,
                                     'gerente' => $manager,
                                     'responsable' => strtoupper($responsable['fullname']),
                                     'origen' => $origin,
