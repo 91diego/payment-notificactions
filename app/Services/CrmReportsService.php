@@ -48,6 +48,14 @@ class CrmReportsService
     }
 
     /**
+     * Update deals report
+     */
+    public function updateDealsReport($category)
+    {
+        return $this->crmReportsRepository->updateDealsReport($category);
+    }
+
+    /**
      * Generate comercial report
      */
     public function comercialReport()

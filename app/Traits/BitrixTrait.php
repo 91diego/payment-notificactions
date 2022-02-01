@@ -866,7 +866,7 @@ trait BitrixTrait
     {
         $status = 'success';
         $code = 200;
-        $message = 'Reporte actualizado con exitosamente';
+        $message = 'Reporte actualizado exitosamente.';
         // Numero de registros mostrados por peticion
         $rows = 50;
         // Primer registro para mostrar en la peticion
@@ -979,6 +979,177 @@ trait BitrixTrait
                             'bitrix_created_by' => strtoupper($createdBy['fullname']),
                             'bitrix_created_at' => $createdAt,
                             'bitrix_modified_at' => $modifiedAt,
+                        ]);
+                    }
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $status = 'error';
+            $code = 400;
+            $message = $e->getMessage();
+        }
+        return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
+    }
+
+
+    /**
+     * Add new deal on deals report
+     */
+    public function addDeal($dbDeals, $bitrixDeals)
+    {
+        $status = 'success';
+        $code = 200;
+        $message = 'Reporte actualizado exitosamente.';
+        // Numero de registros mostrados por peticion
+        $rows = 50;
+        // Primer registro para mostrar en la peticion
+        $firstRow = 0;
+        DB::beginTransaction();
+        try {
+            if ($dbDeals < $bitrixDeals)
+            {
+                // Helps to know how many records will be insert on database,
+                // is the difference between bitrix total and database total.
+                $numberOfRecords = $bitrixDeals - $dbDeals;
+                $bitrixDeals = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?start=$firstRow&ORDER[ID]=DESC");
+                $result = $bitrixDeals ->json();
+
+                if ($numberOfRecords > 50) {
+                    for ($deal = 0; $deal < ceil($numberOfRecords / $rows); $deal++)
+                    {
+                        $deal == 0 ? $firstRow = $firstRow : $firstRow = $firstRow + $rows;
+                        $deal == (intval((ceil($numberOfRecords / $rows)) - 1)) ?
+                            intval($numberOfRecords > intval($firstRow)
+                                ? $substractionRows = (intval($numberOfRecords - intval($firstRow))) :
+                                    $substractionRows = (intval($firstRow) - intval($numberOfRecords))) :
+                                        $substractionRows = $rows;
+                        set_time_limit(100000000);
+                        for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
+                        {
+                            // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $result
+                            $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.get?ID=" . $result['result'][$pushDeal]['ID']);
+                            $jsonDeal = $dealUrl->json();
+
+                            $id = $jsonDeal['result']['ID'];
+                            $leadId = $jsonDeal['result']['LEAD_ID'];
+                            $negotiationSellId = !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'];
+                            $origin = $this->getOrigin($jsonDeal['result']['SOURCE_ID']);
+                            $stage = $this->getStages($jsonDeal['result']['STAGE_ID']);
+                            $type = $jsonDeal['result']['TYPE_ID'];
+                            $manager = !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'];
+                            $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
+                            $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
+                            $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
+                            $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
+                            $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                            $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
+                            $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
+                            $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
+                            $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396']);
+                            $commentsDisqualification = $jsonDeal['result']['UF_CRM_1573858596']; // UF_CRM_5D03F07FD7E99
+                            $deliveryDateAt = $jsonDeal['result']['UF_CRM_1586290304'];
+                            $newDeliveryDateAt = $jsonDeal['result']['UF_CRM_1586290215'];
+                            $visitedAt = $jsonDeal['result']['UF_CRM_1562191387578'];
+                            $separatedAt = $jsonDeal['result']['UF_CRM_1562355481964'];
+                            $soldAt = $jsonDeal['result']['UF_CRM_1562191592191'];
+                            $visitType =  $this->getVisitType($jsonDeal['result']['UF_CRM_1580847925']);
+                            $createdAt = $jsonDeal['result']['DATE_CREATE'];
+                            $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
+
+                            DealSell::updateOrCreate([
+                                'negociacion_bitrix_id' => $id,
+                            ],
+                            [
+                                'prospecto_bitrix_id' => $leadId,
+                                'negociacion_venta_bitrix_id' => $negotiationSellId,
+                                'etapa' => $stage,
+                                // 'tipo' => $type,
+                                'gerente' => $manager,
+                                'responsable' => strtoupper($responsable['fullname']),
+                                'origen' => $origin,
+                                'motivo_compra' => $purchaseReason,
+                                'canal_venta' => strtoupper($salesChannel),
+                                'producto' => $productName,
+                                'precio' => $productPrice,
+                                'motivo_descalificacion' => $disqualificationReason,
+                                'motivo_cancelacion_apartado' => $reasonCancelationSection,
+                                'desarrollo' => strtoupper($development),
+                                'desarrollo_interes' => strtoupper($interestDevelopment),
+                                'tipo_visita' => $visitType,
+                                'negociacion_descalificado_comentarios' => $commentsDisqualification,
+                                'hora_exacta_visita' => $visitedAt,
+                                'apartado_el' => $separatedAt,
+                                'vendido_el' => $soldAt,
+                                'compromiso_entrega_el' => $deliveryDateAt,
+                                'compromiso_entrega_reproyectado_el' => $newDeliveryDateAt,
+                                'bitrix_creado_el' => $createdAt,
+                                'bitrix_modificado_el' => $modifiedAt,
+                            ]);
+                        }
+                    }
+                }else {
+                    for ($deal = 0; $deal <= $numberOfRecords; $deal++)
+                    {
+                        // OBTENEMOS LOS DATOS POR CADA ID DEL LISTADO DE $result
+                        $dealUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.get?ID=" . $result['result'][$deal]['ID']);
+                        $jsonDeal = $dealUrl->json();
+
+                        $id = $jsonDeal['result']['ID'];
+                        $leadId = $jsonDeal['result']['LEAD_ID'];
+                        $negotiationSellId = !empty($jsonDeal['result']['UF_CRM_1572991763556']) ? $jsonDeal['result']['UF_CRM_1572991763556'] : $jsonDeal['result']['UF_CRM_1579545131'];
+                        $origin = $this->getOrigin($jsonDeal['result']['SOURCE_ID']);
+                        $stage = $this->getStages($jsonDeal['result']['STAGE_ID']);
+                        $type = $jsonDeal['result']['TYPE_ID'];
+                        $manager = !empty($jsonDeal['result']['UF_CRM_5E2F60854D7AC']) ? $jsonDeal['result']['UF_CRM_5E2F60854D7AC'] : $jsonDeal['result']['UF_CRM_1580155762'];
+                        $responsable = $this->getResponsable($jsonDeal['result']['ASSIGNED_BY_ID']);
+                        $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
+                        $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
+                        $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
+                        $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                        $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
+                        $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
+                        $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
+                        $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396']);
+                        $commentsDisqualification = $jsonDeal['result']['UF_CRM_1573858596']; // UF_CRM_5D03F07FD7E99
+                        $deliveryDateAt = $jsonDeal['result']['UF_CRM_1586290304'];
+                        $newDeliveryDateAt = $jsonDeal['result']['UF_CRM_1586290215'];
+                        $visitedAt = $jsonDeal['result']['UF_CRM_1562191387578'];
+                        $separatedAt = $jsonDeal['result']['UF_CRM_1562355481964'];
+                        $soldAt = $jsonDeal['result']['UF_CRM_1562191592191'];
+                        $visitType =  $this->getVisitType($jsonDeal['result']['UF_CRM_1580847925']);
+                        $createdAt = $jsonDeal['result']['DATE_CREATE'];
+                        $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
+
+                        DealSell::updateOrCreate([
+                            'negociacion_bitrix_id' => $id,
+                        ],
+                        [
+                            'prospecto_bitrix_id' => $leadId,
+                            'negociacion_venta_bitrix_id' => $negotiationSellId,
+                            'etapa' => $stage,
+                            // 'tipo' => $type,
+                            'gerente' => $manager,
+                            'responsable' => strtoupper($responsable['fullname']),
+                            'origen' => $origin,
+                            'motivo_compra' => $purchaseReason,
+                            'canal_venta' => strtoupper($salesChannel),
+                            'producto' => $productName,
+                            'precio' => $productPrice,
+                            'motivo_descalificacion' => $disqualificationReason,
+                            'motivo_cancelacion_apartado' => $reasonCancelationSection,
+                            'desarrollo' => strtoupper($development),
+                            'desarrollo_interes' => strtoupper($interestDevelopment),
+                            'tipo_visita' => $visitType,
+                            'negociacion_descalificado_comentarios' => $commentsDisqualification,
+                            'hora_exacta_visita' => $visitedAt,
+                            'apartado_el' => $separatedAt,
+                            'vendido_el' => $soldAt,
+                            'compromiso_entrega_el' => $deliveryDateAt,
+                            'compromiso_entrega_reproyectado_el' => $newDeliveryDateAt,
+                            'bitrix_creado_el' => $createdAt,
+                            'bitrix_modificado_el' => $modifiedAt,
                         ]);
                     }
                 }

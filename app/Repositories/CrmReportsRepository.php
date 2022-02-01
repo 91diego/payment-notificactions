@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 
+use App\Models\DealSell;
 use App\Models\Lead;
 use App\Traits\BitrixTrait;
 use Exception;
@@ -54,11 +55,24 @@ class CrmReportsRepository
     public function updateLeadsReport()
     {
         $leadsRecordsDb = count(Lead::all());
-        $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
-        $jsonDeals = $dealsUrl->json();
-        $bitrixLeads = $jsonDeals['total'] + 1;
+        $leadsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
+        $jsonLeads = $leadsUrl->json();
+        $bitrixLeads = $jsonLeads['total'] + 1;
         $this->addLead($leadsRecordsDb, $bitrixLeads);
         return $this->updateLead('LEADS');
+    }
+
+    /**
+     * Update deals report
+     */
+    public function updateDealsReport($category)
+    {
+        $dealsRecordsDb = count(DealSell::all());
+        $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?FILTER[CATEGORY_ID]=$category");
+        $jsonDeals = $dealsUrl->json();
+        $bitrixDeals = $jsonDeals['total'] + 1;
+        $this->addLead($dealsRecordsDb, $bitrixDeals);
+        return $this->updateDeal($category);
     }
 
     /**
