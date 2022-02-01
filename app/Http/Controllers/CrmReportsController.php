@@ -55,6 +55,14 @@ class CrmReportsController extends Controller
     }
 
     /**
+     * Update deals report
+     */
+    public function updateDealsReport($category)
+    {
+        return $this->crmReportsService->updateDealsReport($category);
+    }
+
+    /**
      * Generate comercial report
      */
     public function comercialReport()
