@@ -531,7 +531,7 @@ trait BitrixTrait
         DB::beginTransaction();
         try {
             // Get last lead saved on db
-            $dealByModifiedDate = $category == 0 ? DealSell::orderBy('bitrix_created_el', 'DESC')->get() : DealSell::orderBy('bitrix_created_el', 'DESC')->get();
+            $dealByModifiedDate = $category == 0 ? DealSell::orderBy('bitrix_creado_el', 'DESC')->get() : DealSell::orderBy('bitrix_creado_el', 'DESC')->get();
             $dealsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.deal.list?start=$firstRow&FILTER[>DATE_MODIFY]=" . $dealByModifiedDate[0]['bitrix_modificado_el'] . "&ORDER[DATE_MODIFY]=DESC&FILTER[CATEGORY_ID]=$category");
             $jsonDeals = $dealsUrl->json();
             if(count($jsonDeals['result']) > 0)
@@ -605,7 +605,7 @@ trait BitrixTrait
                                     'vendido_el' => $soldAt,
                                     'compromiso_entrega_el' => $deliveryDateAt,
                                     'compromiso_entrega_reproyectado_el' => $newDeliveryDateAt,
-                                    'bitrix_created_el' => $createdAt,
+                                    'bitrix_creado_el' => $createdAt,
                                     'bitrix_modificado_el' => $modifiedAt,
                                 ]);
                         }
