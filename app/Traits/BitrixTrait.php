@@ -412,7 +412,9 @@ trait BitrixTrait
      */
     public function getDeals($category)
     {
-	    $userLog = [];
+	$initLog = date("Y-m-d H:i:s") . ", INICIO LOG";
+        Storage::append('negociacion_ventas_log.txt', $initLog);
+	$userLog = [];
         $status = 'success';
         $code = 200;
         $message = "Reporte generado exitosamente deals $category";
