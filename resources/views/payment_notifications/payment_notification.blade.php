@@ -24,7 +24,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td class="mcnImageContent" valign="top" style="padding-right: 9px; padding-left: 9px; padding-top: 0; padding-bottom: 0; text-align:center;">
-                                                                    <img align="center" alt="" src="{{ $logo }}" width="564" style="max-width:4167px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
+                                                                    <img align="center" alt="" src="{{ $logo }}" width="364" style="max-width:4167px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage">
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -41,7 +41,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td valign="top" class="mcnTextContent" style="padding-top:0; padding-right:18px; padding-bottom:9px; padding-left:18px;">
-                                                                    <h3 class="null" style="text-align: left;"><span style="font-size:19px"><span style="font-family:source sans pro,helvetica neue,helvetica,arial,sans-serif"><span style="color:#33cccc">Estimado {{ $cliente }}</span></span></span><br>&nbsp;</h3>
+                                                                    <h3 class="null" style="text-align: left;"><span style="font-size:19px"><span style="font-family:source sans pro,helvetica neue,helvetica,arial,sans-serif"><span style="color:{{ $titleColor }}">Estimado {{ $cliente }}</span></span></span><br>&nbsp;</h3>
                                                                     <div style="text-align: center;"><font face="source sans pro, helvetica neue, helvetica, arial, sans-serif" size="3">Por este medio le recordamos que se acerca la fecha de pago de la mensualidad del Departamento que&nbsp;adquirió&nbsp;en el desarrollo inmobiliario denominado {{ $desarrollo }}.</font></div>
                                                                 </td>
                                                             </tr>
@@ -63,7 +63,7 @@
                                                                     <table border="0" cellspacing="0" class="mcnTextContentContainer" width="100%" style="min-width: 100% !important;background-color: #404040;">
                                                                         <tbody>
                                                                             <tr>
-                                                                                <td valign="top" class="mcnTextContent" style="padding: 18px;color: #F2F2F2;font-family: Helvetica;font-size: 14px;font-weight: normal;text-align: center;">
+                                                                                <td valign="top" class="mcnTextContent" style="padding: 18px;color: {{ $fontColor }};font-family: Helvetica;font-size: 14px;font-weight: normal;text-align: center;">
 																					<span style="font-size:16px">
 																						<span style="font-family:source sans pro,helvetica neue,helvetica,arial,sans-serif">
 																						<strong>
@@ -120,11 +120,11 @@
                                                                         <tbody>
                                                                             <tr>
                                                                                 <td valign="top" class="mcnTextContent" style="padding: 18px;color: #F2F2F2;font-family: Helvetica;font-size: 14px;font-weight: normal;text-align: center;">
-                                                                                    <div style="text-align: center;"><strong><span style="font-size:16px"><span style="font-family:source sans pro,helvetica neue,helvetica,arial,sans-serif"><span style="color:#33cccc">Para depósitos con cheque o transferencia en ventanilla:</span><br>
+                                                                                    <div style="text-align: center;"><strong><span style="font-size:16px"><span style="font-family:source sans pro,helvetica neue,helvetica,arial,sans-serif"><span style="color: {{ $fontColor }}">Para depósitos con cheque o transferencia en ventanilla:</span><br>
 																						Cuenta: {{ $cuenta }}
 																						Banco: {{ $banco }}
 																						<br><br>
-																						<span style="color:#33cccc">Para depósito con cheque o&nbsp;transferencia en ventanilla:</span><br>
+																						<span style="color:{{ $fontColor }}">Para depósito con cheque o&nbsp;transferencia en ventanilla:</span><br>
 																						CLABE: {{ $clabe }}<br>
 																						Nombre de Titular: {{ $titular }}<br>
 																						Referencia: {{ $referencia_pago }}<br>
@@ -181,7 +181,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td style="padding-top:9px; padding-left:18px; padding-bottom:9px; padding-right:18px;">
-                                                                    <table border="0" cellspacing="0" class="mcnTextContentContainer" width="100%" style="min-width: 100% !important;background-color: #08C9B9;">
+                                                                    <table border="0" cellspacing="0" class="mcnTextContentContainer" width="100%" style="min-width: 100% !important;background-color: {{ $backgroundColor }}">
                                                                         <tbody>
                                                                             <tr>
                                                                                 <td valign="top" class="mcnTextContent" style="padding: 18px;color: #F2F2F2;font-family: Helvetica;font-size: 14px;font-weight: normal;text-align: center;">

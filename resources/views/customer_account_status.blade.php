@@ -10,7 +10,7 @@
   <body>
     <div class="container-fluid">
 
-        <img src="{{ $logoDesarrollo ?? '' }}" alt="Card image">
+        <img src="{{ $logoDesarrollo ?? '' }}" alt="Card image" width="364" style="max-width:4167px; padding-bottom: 0; display: inline !important; vertical-align: bottom;">
         <div class="card bg-white text-black border border-white">
             <div class="card-body">
                 <h3> {{ $nombreCliente ?? '' }} </h3>

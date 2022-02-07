@@ -23,6 +23,9 @@ class PaymentNotification extends Mailable
     public $titular;
     public $acumuladoSaldo;
     public $subject;
+    public $fontColor;
+    public $titleColor;
+    public $backgroundColor;
 
     /**
      * Create a new message instance.
@@ -40,6 +43,9 @@ class PaymentNotification extends Mailable
         $clabeDesarrollo = "";
         $titularDesarrollo = "";
         $pagoMensual = "";
+        $color = "";
+        $titlesColor = "";
+        $background = "";
         $this->sendMailCobranza = $data;
         $this->accountStatus = $data;
         $this->path = $pathPDF;
@@ -78,6 +84,9 @@ class PaymentNotification extends Mailable
         // SE ASIGNA EL LOGOTIPO DEL DESARROLLO EN EL ESTADO DE CUENTA
         switch ($this->accountStatus['customer_information']['desarrollo']) {
             case 'Anuva':
+                $color = "#3CC4B4";
+                $titlesColor = "#3CC4B4";
+                $background = "#3CC4B4";
                 $cuentaDesarrollo = "65-50725502-0";
                 $bancoDesarrollo = "SANTANDER";
                 $clabeDesarrollo = "014320655072550201";
@@ -85,6 +94,9 @@ class PaymentNotification extends Mailable
                 $logoDesarrollo = "https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/57719a0d-e7ae-4677-bd3b-b33caeba75ea.jpg";
                 break;
             case 'Brasilia':
+                $color = "#ecf3f3";
+                $titlesColor = "#000000";
+                $background = "#232323";
                 $cuentaDesarrollo = "65-50626311-9";
                 $bancoDesarrollo = "SANTANDER";
                 $clabeDesarrollo = "014320655062631198";
@@ -92,6 +104,9 @@ class PaymentNotification extends Mailable
                 $logoDesarrollo = "https://ci4.googleusercontent.com/proxy/RlvahJM72DNi2U6RnA7CNNEi0vamTkzGhSeJFYoRkokM4Mr8drDVBeEGJ8noWUxgEhA-PktyBNf78nE85yc4ip6vhfBkQFklBzQMSTDLEypFCBEEs8yI85LZyZCekZtg5HHN84DOWI5yU7-TYYOY2KUEx7Oopw=s0-d-e1-ft#https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/54c6f1dc-20a2-b872-3683-4eee4fb37016.png";
                 break;
             case 'Aladra':
+                $color = "#514E93";
+                $titlesColor = "#514E93";
+                $background = "#514E93";
                 $cuentaDesarrollo = "0267861450201";
                 $bancoDesarrollo = "BANBAJIO";
                 $clabeDesarrollo = "03032090002079227";
@@ -124,6 +139,9 @@ class PaymentNotification extends Mailable
         $this->banco = $bancoDesarrollo;
         $this->clabe = $clabeDesarrollo;
         $this->titular = $titularDesarrollo;
+        $this->fontColor = $color;
+        $this->titleColor = $titlesColor;
+        $this->backgroundColor = $background;
         $diasAntesPago = $this->accountStatus['customer_information']["dias_antes_de_pago"];
         /* FIN DATOS GENERALES */
         // GENERACION DEL PDF
@@ -144,6 +162,7 @@ class PaymentNotification extends Mailable
     {
         return $this->subject($this->subject)
         ->view('payment_notifications.payment_notification', [
+            'colorFuente' => $this->fontColor,
             'cliente' => $this->accountStatus['customer_information']['cliente'],
             'logo' => $this->logo,
             'cuenta' => $this->cuenta,
