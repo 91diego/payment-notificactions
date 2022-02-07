@@ -198,7 +198,7 @@ trait BitrixTrait
         // CAMPOS DE LA RESPUESTA
         $fields = json_decode($responseAPI, true);
         // NUMERO DE CAMPOS EN LA POSICION DEL ARRAY
-        $disqualificationReason = $type == 'deal' ? $fields['result']['UF_CRM_5D03F07FD7E99']['items'] : $fields['result']['UF_CRM_1560365005396']['items'] ;
+        $disqualificationReason = $type == 'deal' ? $fields['result']['UF_CRM_1560365005396']['items'] : $fields['result']['UF_CRM_1560365005396']['items'] ;
 
         for ($i = 0; $i < count($disqualificationReason); $i++) {
 
@@ -230,6 +230,29 @@ trait BitrixTrait
 
             if ($purchaseReason[$i]['ID'] == $id) {
                 return isset($purchaseReason[$i]['VALUE']) || !empty($purchaseReason[$i]['VALUE']) ? $purchaseReason[$i]['VALUE'] : 'Sin motivo de compra';
+            }
+        }
+    }
+
+        /**
+     * Obtiene el motivo de cancelacion del deal
+     * @param int id
+     * @param string type default deal
+     * @return string reason cancelation
+     */
+    public function getReasonCancelation($id, $type = 'deal')
+    {
+        $fieldsDeals = "$this->bitrixSite$this->bitrixToken/crm.$type.fields";
+        // OBTIENE LA RESPUESTA DE LA API REST BITRIX
+        $responseAPI = file_get_contents($fieldsDeals);
+        // CAMPOS DE LA RESPUESTA
+        $fields = json_decode($responseAPI, true);
+        // NUMERO DE CAMPOS EN LA POSICION DEL ARRAY
+        $reasonCancelation = $type == 'deal' ? $fields['result']['UF_CRM_1560811855979']['items'] : $fields['result']['UF_CRM_1560811855979']['items'] ;
+
+        for ($i = 0; $i < count($reasonCancelation); $i++) {
+            if ($reasonCancelation[$i]['ID'] == $id) {
+                return isset($reasonCancelation[$i]['VALUE']) || !empty($reasonCancelation[$i]['VALUE']) ? $reasonCancelation[$i]['VALUE'] : 'Sin motivo de cancelacion';
             }
         }
     }
@@ -454,7 +477,7 @@ trait BitrixTrait
                     $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
                     $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
                     $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
-                    $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                    $reasonCancelationSection = $this->getReasonCancelation($jsonDeal['result']['UF_CRM_1560811855979']);
                     $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
                     $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
                     $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
@@ -560,7 +583,7 @@ trait BitrixTrait
                         $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
                         $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
                         $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
-                        $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                        $reasonCancelationSection = $this->getReasonCancelation($jsonDeal['result']['UF_CRM_1560811855979']);
                         $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
                         $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
                         $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
@@ -1043,7 +1066,7 @@ trait BitrixTrait
                             $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
                             $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
                             $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
-                            $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                            $reasonCancelationSection = $this->getReasonCancelation($jsonDeal['result']['UF_CRM_1560811855979']);
                             $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
                             $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
                             $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
@@ -1107,7 +1130,7 @@ trait BitrixTrait
                         $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_5D03F07FB6F84']);
                         $development = $this->getPlaceName($jsonDeal['result']['UF_CRM_5D12A1A9D28ED']);
                         $interestDevelopment = $this->getInterestDevelopment($jsonDeal['result']['UF_CRM_1598033555703']);
-                        $reasonCancelationSection = $jsonDeal['result']['UF_CRM_1560811855979'];
+                        $reasonCancelationSection = $this->getReasonCancelation($jsonDeal['result']['UF_CRM_1560811855979']);
                         $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_5CF9D773AAF07']);
                         $productName = !empty($jsonDeal['result']['UF_CRM_1573064054413']) ? $jsonDeal['result']['UF_CRM_1573064054413'] : $jsonDeal['result']['UF_CRM_1573063908'];
                         $productPrice = $jsonDeal['result']['UF_CRM_1573066384206'];
