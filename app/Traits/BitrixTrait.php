@@ -198,7 +198,7 @@ trait BitrixTrait
         // CAMPOS DE LA RESPUESTA
         $fields = json_decode($responseAPI, true);
         // NUMERO DE CAMPOS EN LA POSICION DEL ARRAY
-        $disqualificationReason = $type == 'deal' ? $fields['result']['UF_CRM_5D03F07FD7E99']['items'] : $fields['result']['UF_CRM_1560365005396']['items'] ;
+        $disqualificationReason = $type == 'deal' ? $fields['result']['UF_CRM_1560365005396']['items'] : $fields['result']['UF_CRM_1560365005396']['items'] ;
 
         for ($i = 0; $i < count($disqualificationReason); $i++) {
 
