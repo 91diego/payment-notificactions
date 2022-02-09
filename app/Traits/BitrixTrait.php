@@ -939,21 +939,24 @@ trait BitrixTrait
                                 $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
                                 $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                             }
-                            Lead::create([
+
+                            Lead::updateOrCreate([
                                 'prospecto_bitrix_id'   => $id,
-                                'name' => strtoupper($leadName),
-                                'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                            ],
+                            [
+                                'nombre' => strtoupper($leadName),
+                                'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                                 'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                                'origin' => $origin,
+                                'origen' => $origin,
                                 'responsable' => strtoupper($responsable['fullname']),
-                                'development' => strtoupper($development),
-                                'sales_channel' => strtoupper($salesChannel),
-                                'purchase_reason' => strtoupper($purchaseReason),
-                                'disqualification_reason' => $disqualificationReason,
-                                'status' => $bitrixStatus,
-                                'bitrix_created_by' => strtoupper($createdBy['fullname']),
-                                'bitrix_created_at' => $createdAt,
-                                'bitrix_modified_at' => $modifiedAt,
+                                'desarrollo' => strtoupper($development),
+                                'canal_ventas' => strtoupper($salesChannel),
+                                'motivo_compra' => strtoupper($purchaseReason),
+                                'motivo_descalificacion' => $disqualificationReason,
+                                'estatus' => $status,
+                                'bitrix_creado_por' => strtoupper($createdBy['fullname']),
+                                'bitrix_creado_el' => $createdAt,
+                                'bitrix_modificado_el' => $modifiedAt,
                             ]);
                         }
                     }
@@ -987,21 +990,23 @@ trait BitrixTrait
                             $email = isset($jsonDeal['result']['EMAIL'][0]['VALUE']) || !empty($jsonDeal['result']['EMAIL'][0]['VALUE']) ?
                             $jsonDeal['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                         }
-                        Lead::create([
+                        Lead::updateOrCreate([
                             'prospecto_bitrix_id'   => $id,
-                            'name' => strtoupper($leadName),
-                            'phone' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
+                        ],
+                        [
+                            'nombre' => strtoupper($leadName),
+                            'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                             'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                            'origin' => $origin,
+                            'origen' => $origin,
                             'responsable' => strtoupper($responsable['fullname']),
-                            'development' => strtoupper($development),
-                            'sales_channel' => strtoupper($salesChannel),
-                            'purchase_reason' => strtoupper($purchaseReason),
-                            'disqualification_reason' => $disqualificationReason,
-                            'status' => $bitrixStatus,
-                            'bitrix_created_by' => strtoupper($createdBy['fullname']),
-                            'bitrix_created_at' => $createdAt,
-                            'bitrix_modified_at' => $modifiedAt,
+                            'desarrollo' => strtoupper($development),
+                            'canal_ventas' => strtoupper($salesChannel),
+                            'motivo_compra' => strtoupper($purchaseReason),
+                            'motivo_descalificacion' => $disqualificationReason,
+                            'estatus' => $status,
+                            'bitrix_creado_por' => strtoupper($createdBy['fullname']),
+                            'bitrix_creado_el' => $createdAt,
+                            'bitrix_modificado_el' => $modifiedAt,
                         ]);
                     }
                 }
