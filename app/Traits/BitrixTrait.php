@@ -405,6 +405,7 @@ trait BitrixTrait
      */
     public function leadsStages($stageId)
     {
+        $status = "";
         switch ($stageId) {
             case 'IN_PROCESS':
                 $status = 'Pospecto asignado';
