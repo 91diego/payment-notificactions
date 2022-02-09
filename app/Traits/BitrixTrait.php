@@ -813,7 +813,7 @@ trait BitrixTrait
                         $salesChannel = $this->getSalesChannel($jsonDeal['result']['UF_CRM_1560363526781'], 'lead');
                         $purchaseReason = $this->getPurchaseReason($jsonDeal['result']['UF_CRM_1559757849830'], 'lead');
                         $disqualificationReason = $this->getDisqualificationReason($jsonDeal['result']['UF_CRM_1560365005396'], 'lead');
-                        $status = $this->leadsStages($jsonDeal['result']['STATUS_ID']);
+                        $bitrixStatus = $this->leadsStages($jsonDeal['result']['STATUS_ID']);
                         $modifiedAt = $jsonDeal['result']['DATE_MODIFY'];
                         $createdAt = $jsonDeal['result']['DATE_CREATE'];
                         $createdBy = $this->getResponsable($jsonDeal["result"]['CREATED_BY_ID']);
@@ -840,7 +840,7 @@ trait BitrixTrait
                             'responsable' => strtoupper($responsable['fullname']),
                             'desarrollo' => strtoupper($development),
                             'canal_ventas' => strtoupper($salesChannel),
-                            'estatus' => $status,
+                            'estatus' => $bitrixStatus,
                             'motivo_compra' => strtoupper($purchaseReason),
                             'motivo_descalificacion' => $disqualificationReason,
                             'bitrix_creado_por' => strtoupper($createdBy['fullname']),
@@ -860,7 +860,7 @@ trait BitrixTrait
                                     'responsable' => strtoupper($responsable['fullname']),
                                     'desarrollo' => strtoupper($development),
                                     'canal_ventas' => strtoupper($salesChannel),
-                                    'estatus' => $status,
+                                    'estatus' => $bitrixStatus,
                                     'motivo_compra' => strtoupper($purchaseReason),
                                     'motivo_descalificacion' => $disqualificationReason,
                                     'bitrix_creado_por' => strtoupper($createdBy['fullname']),
