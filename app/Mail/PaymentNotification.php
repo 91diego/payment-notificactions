@@ -101,7 +101,8 @@ class PaymentNotification extends Mailable
                 $bancoDesarrollo = "SANTANDER";
                 $clabeDesarrollo = "014320655062631198";
                 $titularDesarrollo = "DESARROLLOS BRASILIA SAPI DE C.V";
-                $logoDesarrollo = "https://ci4.googleusercontent.com/proxy/RlvahJM72DNi2U6RnA7CNNEi0vamTkzGhSeJFYoRkokM4Mr8drDVBeEGJ8noWUxgEhA-PktyBNf78nE85yc4ip6vhfBkQFklBzQMSTDLEypFCBEEs8yI85LZyZCekZtg5HHN84DOWI5yU7-TYYOY2KUEx7Oopw=s0-d-e1-ft#https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/54c6f1dc-20a2-b872-3683-4eee4fb37016.png";
+                $logoDesarrollo = "";
+                //$logoDesarrollo = "https://ci4.googleusercontent.com/proxy/RlvahJM72DNi2U6RnA7CNNEi0vamTkzGhSeJFYoRkokM4Mr8drDVBeEGJ8noWUxgEhA-PktyBNf78nE85yc4ip6vhfBkQFklBzQMSTDLEypFCBEEs8yI85LZyZCekZtg5HHN84DOWI5yU7-TYYOY2KUEx7Oopw=s0-d-e1-ft#https://mcusercontent.com/3ec4abd994abed22a4c543d03/images/54c6f1dc-20a2-b872-3683-4eee4fb37016.png";
                 break;
             case 'Aladra':
                 $color = "#514E93";
