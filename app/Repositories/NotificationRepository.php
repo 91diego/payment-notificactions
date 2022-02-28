@@ -175,34 +175,34 @@ class NotificationRepository
                 if ($value['develop_name'] == 'BRASILIA') {
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
-                        if ($customer->diferencia_real_dias == -7 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == -7 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFBrasilia));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 7 days after payment
-                        if ($customer->diferencia_real_dias == 7 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 7 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFBrasilia));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 90 days after payment
-                        if ($customer->diferencia_real_dias == 90 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 90 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFBrasilia));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 120 days after payment
-                        if ($customer->diferencia_real_dias == 120 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 120 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFBrasilia));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // test
-                        if ($customer->diferencia_real_dias == 652 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 652 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFBrasilia));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                     }
                 }
@@ -210,34 +210,34 @@ class NotificationRepository
                 if ($value['develop_name'] == 'ANUVA') {
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
-                        if ($customer->diferencia_real_dias == -7 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == -7 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFAnuva));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 7 days after payment
-                        if ($customer->diferencia_real_dias == 7 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 7 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFAnuva));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 90 days after payment
-                        if ($customer->diferencia_real_dias == 90 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 90 && str_contains($customer->concepto, 'ENGANCHE')) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFAnuva));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 120 days after payment
-                        if ($customer->diferencia_real_dias == 120 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 120 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAnuva));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // test
-                        if ($customer->diferencia_real_dias == 798 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 798 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAnuva));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                     }
                 }
@@ -245,34 +245,34 @@ class NotificationRepository
                 if ($value['develop_name'] == 'ALADRA') {
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
-                        if ($customer->diferencia_real_dias == -7 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == -7 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que su proxima fecha de pago es en 7 dias.", $pathPDFAladra));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 7 days after payment
-                        if ($customer->diferencia_real_dias == 7 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 7 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 7 dias en su pago.", $pathPDFAladra));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 90 days after payment
-                        if ($customer->diferencia_real_dias == 90 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 90 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 90 dias en su pago.", $pathPDFAladra));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // 120 days after payment
-                        if ($customer->diferencia_real_dias == 120 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 120 && str_contains($customer->concepto, 'ENGANCHE') && $customer->saldo_pendiente > 0) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Estimado cliente, le recordamos que existe un atraso de 120 dias en su pago.", $pathPDFAladra));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                         // test
-                        if ($customer->diferencia_real_dias == 798 && str_contains($customer->concepto, 'ENGANCHE')) {
+                        if ($customer->diferencia_dias == 798 && str_contains($customer->concepto, 'ENGANCHE')) {
                             array_push($acountLogs, $this->sendEmailNotification($this->makeAccountStatus($customer, $value['items']['customer_payments']), "Esto es un test", $pathPDFAladra));
                         }else {
-                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_real_dias");
+                            array_push($acountLogs, "No existen usuarios para envio en $customer->diferencia_dias");
                         }
                     }
                 }
