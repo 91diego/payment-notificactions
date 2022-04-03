@@ -52,7 +52,6 @@ class PaymentNotification extends Mailable
         $this->subject = $subject;
 
         foreach ($this->accountStatus['customer_account_status'] as $key => $value) {
-            // dd($value);
             $estatusPago = "";
             $diferenciaDias = (int)$value['dias_antes_de_pago'];
             $adeudoCliente = (float)$value['monto_pago'];
@@ -78,7 +77,6 @@ class PaymentNotification extends Mailable
                     'dias_siguiente_pago' => $value['dias_antes_de_pago'],
                 ]);
             }
-            //dd([$value['customer_information'], $value['customer_account_status']]);
         }
 
         // SE ASIGNA EL LOGOTIPO DEL DESARROLLO EN EL ESTADO DE CUENTA

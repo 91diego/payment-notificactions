@@ -13,8 +13,8 @@ class ConnectionService
         $this->connectionRepository = $connectionRepository;
     }
 
-    public function index()
+    public function index($request)
     {
-        return $this->connectionRepository->index();
+        return $this->connectionRepository->index($request);
     }
 }

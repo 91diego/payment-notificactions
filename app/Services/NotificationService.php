@@ -13,9 +13,9 @@ class NotificationService
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function index()
+    public function index($request)
     {
-        return $this->notificationRepository->index();
+        return $this->notificationRepository->index($request);
     }
 
     public function store($request)

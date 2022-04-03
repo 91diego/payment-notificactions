@@ -25,9 +25,9 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $customerPayments = $this->notificationService->index();
+        $customerPayments = $this->notificationService->index($request->all());
         return $this->notificationService->store($customerPayments);
     }
 

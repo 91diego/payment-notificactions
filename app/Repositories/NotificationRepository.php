@@ -25,12 +25,12 @@ class NotificationRepository
      * Display a listing of the resource.
      *
      */
-    public function index()
+    public function index($request)
     {
         DB::beginTransaction();
         try {
             $customerPayments = [];
-            $connections = $this->connectionService->index();
+            $connections = $this->connectionService->index($request);
             foreach ($connections as $value) {
                 array_push($customerPayments, ['develop_name' => $value->name, "items" => $this->getNeodataPayments($value->notification_cases, $value->name)]);
             }
@@ -98,11 +98,9 @@ class NotificationRepository
         $fechaBase = '';
         // ALMACENA LA FECHA PARA COMPARAR
         $fechaComparacion = '';
-        // dd($accountStatus);
+
         foreach ($accountStatus['customer_account_status'] as $key => $value) {
-            // dd($paymentsInformation);
-            // dd($accountStatus['customer_account_status'][$key + 1]['monto_pago']);
-            // dd([$key, count($accountStatus['customer_account_status'])]);
+
             $currentPayment = (int)$value['monto_pago'];
             $fechaBase = strtotime(date($value['fecha_pago']));
             // Get next payment
@@ -132,13 +130,12 @@ class NotificationRepository
             (int)$value['monto_pago'] > 0 && (int)$value['dias_antes_de_pago'] > 0 ?
                 $balanceDue = $balanceDue + (int)$value['monto_pago'] : '';
         }
-        // ESTE EL EMIAL DEL CLIENTE => $data[$i]["email"]
         //$bccEmails = ['ygomez@idex.cc','soportecrm@idex.cc','bat@idex.cc','dgonzalez@milktech.com','cmata@idex.cc']; // Listado de emails bcc
         $bccEmails = ['ygomez@idex.cc', 'soportecrm@idex.cc', 'diegoaglez91@gmail.com']; // Listado de emails bcc
         try {
-            // ESTE EL EMIAL DEL CLIENTE => $data[$i]["email"]
+            // ESTE EL EMIAL DEL CLIENTE => $accountStatus['customer_information']['email']
             Mail::to("dgonzalez@milktech.io")
-            // Mail::to($data[$i]["email"]) // esta linea contiene el array con los emails de los clientes
+           // Mail::to($accountStatus['customer_information']['email']) // esta linea contiene el array con los emails de los clientes
             ->bcc($bccEmails) // las lineas con bcc es el envio con copia oculta
             ->send(new PaymentNotification($accountStatus, $lastPayment, $balanceDue, $totalPayment, $pathPDF, $mailSubject));
         } catch (\Exception $error) {
@@ -171,7 +168,6 @@ class NotificationRepository
             $pathPDFAnuva = storage_path().'/notificaciones_cobranza/anuva/edo_cuenta.pdf';
             $pathPDFAladra = storage_path().'/notificaciones_cobranza/aladra/edo_cuenta.pdf';
             foreach ($request as $value) {
-
                 if ($value['develop_name'] == 'BRASILIA') {
                     foreach ($value['items']['customer_payments'] as $customer) {
                         // 7 days before payment
