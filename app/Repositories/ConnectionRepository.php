@@ -7,10 +7,10 @@ use App\Models\Connection;
 class ConnectionRepository
 {
 
-    public function index()
+    public function index($request)
     {
         try {
-            $result = Connection::all();
+            $result = Connection::where('name', $request['name'])->get();//all();
         } catch (\Exception $e) {
             $result = $e;
         }

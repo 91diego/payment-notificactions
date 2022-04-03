@@ -137,7 +137,7 @@ class CrmReportsRepository
                         }
                         catch(Exception $e)
                         {
-                            dd($e);
+                            return $e->getMessage();
                         }
                     }
                 break;
@@ -176,7 +176,7 @@ class CrmReportsRepository
                         }
                         catch(Exception $e)
                         {
-                            dd($e);
+                            return $e->getMessage();
                         }
                     }
                 break;
@@ -214,7 +214,7 @@ class CrmReportsRepository
                         }
                         catch(Exception $e)
                         {
-                            dd($e);
+                            return $e->getMessage();
                         }
                     }
                 break;

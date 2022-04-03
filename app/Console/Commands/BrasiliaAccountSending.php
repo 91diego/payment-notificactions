@@ -2,27 +2,26 @@
 
 namespace App\Console\Commands;
 
+use App\Services\NotificationService;
 use Exception;
 use Illuminate\Console\Command;
-use App\Services\NotificationService;
 use Illuminate\Support\Facades\Storage;
 
-class CustomerAccountSending extends Command
+class BrasiliaAccountSending extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'account:sending';
+    protected $signature = 'account-sending:brasilia';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send customer account by email';
-    protected $notificationService;
+    protected $description = 'Send customer account to BRASILIA customers';
 
     /**
      * Create a new command instance.
@@ -42,17 +41,17 @@ class CustomerAccountSending extends Command
      */
     public function handle()
     {
-        $message = "CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "BRASILIA CRONJOB EXECUTED SUCCESFULLY!!!";
         try {
             $development = [
-                "name" => "ANUVA"
+                "name" => "BRASILIA"
             ];
             $developments = $this->notificationService->index($development);
             $this->notificationService->store($developments);
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
-        $log = "[" . date('Y-m-d H:i:s') . "] LOG EMAIL ACCOUNT SENDING: " . $message;
+        $log = "[" . date('Y-m-d H:i:s') . "] LOG BRASILIA EMAIL ACCOUNT SENDING: " . $message;
         Storage::append("log_email_account_sending.txt", $log);
     }
 }
