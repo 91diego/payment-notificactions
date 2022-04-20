@@ -51,15 +51,17 @@ class CrmReportsRepository
 
     /**
      * Update leads report
+     * @param cronJob bool, indicate if this method is used in the cronjob or not
      */
-    public function updateLeadsReport()
+    public function updateLeadsReport($cronJob = false)
     {
-        $leadsRecordsDb = count(Lead::all());
-        $leadsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
+        $currentTime = date("Y-m-d");
+        if ($cronJob) {
+            $currentTime = date("Y-m-d",strtotime($currentTime."- 1 days"));
+        }
+        $leadsUrl = Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_MODIFY]=" . $currentTime . "T00:00:00-05:00&FILTER[<DATE_MODIFY]=" . $currentTime . "T23:59:59-05:00");
         $jsonLeads = $leadsUrl->json();
-        $bitrixLeads = $jsonLeads['total'] + 1;
-        $this->addLead($leadsRecordsDb, $bitrixLeads);
-        return $this->updateLead('LEADS');
+        return $this->updateLeadsFromBitrix($jsonLeads);
     }
 
     /**
