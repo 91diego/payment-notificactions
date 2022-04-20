@@ -41,9 +41,9 @@ class CrmReportsController extends Controller
      * NO CALIFICA (STATUS_ID) -> JUNK
      * CALIFICADO (STATUS_ID) -> CONVERTED
      */
-    public function createLeadsReport($phase)
+    public function createLeadsReport(Request $request)
     {
-        return $this->crmReportsService->createLeadsReport($phase);
+        return $this->crmReportsService->createLeadsReport($request->all());
     }
 
     /**

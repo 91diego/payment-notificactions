@@ -660,24 +660,26 @@ trait BitrixTrait
      * CALIFICADO (STATUS_ID) -> CONVERTED
      * PHASE == 0, ALL RECORDS WILL BE RETRIEVE
      */
-    public function getLeads($phase)
+    public function getLeads($request)
     {
         $userLog = [];
         $status = 'success';
         $code = 200;
-        $message = 'Reporte exitoso';
+        $message = 'Reporte leads exitoso';
         // Numero de registros mostrados por peticion
         $rows = 50;
         // Primer registro para mostrar en la peticion
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
+            /*$leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
             if ($phase == 0)
             {
                 $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
-            }
+            }*/
+            $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=" . $request['fechaInicio'] . "");
             $jsonLeads = $leadsUrl->json();
+
             set_time_limit(9000000000);
             for ($lead = 0; $lead < ceil($jsonLeads['total'] / $rows); $lead++)
             {
@@ -688,11 +690,11 @@ trait BitrixTrait
                         $substractionRows = (intval($jsonLeads['total'] - intval($firstRow))) :
                             $substractionRows = (intval($firstRow) - intval($jsonLeads['total']))) :
                                 $substractionRows = $rows;
-                $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
-                if ($phase == 0)
+                $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=" . $request['fechaInicio'] . "");
+                /*if ($phase == 0)
                 {
                     $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
-                }
+                }*/
                 $jsonLeads = $leadsUrl->json();
                 for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
                 {
@@ -723,22 +725,6 @@ trait BitrixTrait
                         $email = isset($jsonLead['result']['EMAIL'][0]['VALUE']) || !empty($jsonLead['result']['EMAIL'][0]['VALUE']) ?
                         $jsonLead['result']['EMAIL'][0]['VALUE'] : 'Sin correo registrado';
                     }
-                    /*Lead::create([
-                        'prospecto_bitrix_id'   => $id,
-                        'nombre' => strtoupper($leadName),
-                        'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
-                        'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
-                        'origen' => $origin,
-                        'responsable' => strtoupper($responsable['fullname']),
-                        'desarrollo' => strtoupper($development),
-                        'canal_ventas' => strtoupper($salesChannel),
-                        'motivo_compra' => strtoupper($purchaseReason),
-                        'motivo_descalificacion' => $disqualificationReason,
-                        'estatus' => $status,
-                        'bitrix_creado_por' => strtoupper($createdBy['fullname']),
-                        'bitrix_creado_el' => $createdAt,
-                        'bitrix_modificado_el' => $modifiedAt,
-                    ]);*/
                     Lead::updateOrCreate([
                         'prospecto_bitrix_id'   => $id,
                     ],
@@ -758,12 +744,12 @@ trait BitrixTrait
                         'bitrix_modificado_el' => $modifiedAt,
                     ]);
                     echo "INSERTADO; PAGINA $lead, REGISTRO $pushDeal, ID: $id<br>";
-                    /*$userAccessLog = [
+                    $userAccessLog = [
                         'PAGINA' => $lead,
                         'REGISTRO' => $pushDeal,
                         "ID" => $id
                     ];
-                    array_push($userLog, $userAccessLog);*/
+                    array_push($userLog, $userAccessLog);
                 }
             }
             DB::commit();
@@ -773,8 +759,8 @@ trait BitrixTrait
             $code = 400;
             $message = $e->getMessage();
         }
-        //$userLogs = json_encode($userLog);
-        $log = date("Y-m-d H:i:s") . ", PAGINA: " . $lead . ", REGISTRO: " . $pushDeal  . ", ID: " . $id . ", MENSAJE: " . $message;
+        $userLogs = json_encode($userLog);
+        $log = date("Y-m-d H:i:s") .  ", MENSAJE: " . $message . ", REGISTROS: " . $userLogs;
         Storage::append('log.txt', $log);
         return response()->json(['status' => $status, 'code' => $code, 'message' => $message, 'items' => null], $code);
     }
