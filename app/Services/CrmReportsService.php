@@ -34,9 +34,9 @@ class CrmReportsService
      * NO CALIFICA (STATUS_ID) -> JUNK
      * CALIFICADO (STATUS_ID) -> CONVERTED
      */
-    public function createLeadsReport($phase)
+    public function createLeadsReport($request)
     {
-        return $this->crmReportsRepository->createLeadsReport($phase);
+        return $this->crmReportsRepository->createLeadsReport($request);
     }
 
     /**
