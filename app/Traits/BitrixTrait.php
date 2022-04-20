@@ -727,6 +727,7 @@ trait BitrixTrait
                         'prospecto_bitrix_id'   => $id,
                     ],
                     [
+                        'prospecto_bitrix_id' => $id,
                         'nombre' => strtoupper($leadName),
                         'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
