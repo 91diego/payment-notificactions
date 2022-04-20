@@ -12,9 +12,6 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        Commands\UpdateLeads::class
-    ];
 
     /**
      * Define the application's command schedule.
@@ -29,7 +26,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('account-sending:aladra')->dailyAt('09:00');
         $schedule->command('account-sending:anuva')->dailyAt('09:00');
         $schedule->command('account-sending:brasilia')->dailyAt('09:00');
-        $schedule->command('update:report-leads')->dailyAt('00:05');
+        $schedule->command('update:report-leads')->dailyAt('10:22');
     }
 
     /**
