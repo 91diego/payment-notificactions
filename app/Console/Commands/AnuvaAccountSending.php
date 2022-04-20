@@ -52,6 +52,6 @@ class AnuvaAccountSending extends Command
             $message = $e->getMessage();
         }
         $log = "[" . date('Y-m-d H:i:s') . "] LOG ANUVA EMAIL ACCOUNT SENDING: " . $message;
-        Storage::append("log_email_account_sending.txt", $log);
+        Storage::append("log_anuva_email_account_sending.txt", $log);
     }
 }

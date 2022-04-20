@@ -52,6 +52,6 @@ class BrasiliaAccountSending extends Command
             $message = $e->getMessage();
         }
         $log = "[" . date('Y-m-d H:i:s') . "] LOG BRASILIA EMAIL ACCOUNT SENDING: " . $message;
-        Storage::append("log_email_account_sending.txt", $log);
+        Storage::append("log_brasilia_email_account_sending.txt", $log);
     }
 }
