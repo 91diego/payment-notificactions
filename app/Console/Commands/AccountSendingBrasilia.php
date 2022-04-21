@@ -2,26 +2,27 @@
 
 namespace App\Console\Commands;
 
-use App\Services\NotificationService;
 use Exception;
 use Illuminate\Console\Command;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Storage;
 
-class AladraAccountSending extends Command
+class AccountSendingBrasilia extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'account-sending:aladra';
+    protected $signature = 'mail:brasilia';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send customer account to ALADRA customers';
+    protected $description = 'Send customer account to BRASILIA customers';
+    protected $notificationService;
 
     /**
      * Create a new command instance.
@@ -41,17 +42,17 @@ class AladraAccountSending extends Command
      */
     public function handle()
     {
-        $message = "ALADRA CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "BRASILIA CRONJOB EXECUTED SUCCESFULLY!!!";
         try {
             $development = [
-                "name" => "ALADRA"
+                "name" => "BRASILIA"
             ];
             $developments = $this->notificationService->index($development);
             $this->notificationService->store($developments);
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
-        $log = "[" . date('Y-m-d H:i:s') . "] LOG ALADRA EMAIL ACCOUNT SENDING: " . $message;
-        Storage::append("log_aladra_email_account_sending.txt", $log);
+        $log = "[" . date('Y-m-d H:i:s') . "] LOG BRASILIA EMAIL ACCOUNT SENDING: " . $message;
+        Storage::append("log_brasilia_email_account_sending.txt", $log);
     }
 }

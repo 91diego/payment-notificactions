@@ -21,12 +21,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //$schedule->command('update:leads')->everyTenMinutes();
-        //$schedule->command('account:sending')->dailyAt('09:00');
-        $schedule->command('account-sending:aladra')->dailyAt('09:00');
-        $schedule->command('account-sending:anuva')->dailyAt('09:00');
-        $schedule->command('account-sending:brasilia')->dailyAt('09:00');
-        $schedule->command('update:report-leads')->dailyAt('00:05');
+        //$schedule->command('update:report-leads')->dailyAt('00:05');
+        $schedule->command('mail:brasilia')->dailyAt('09:00');
+        $schedule->command('mail:anuva')->dailyAt('09:00');
+        $schedule->command('mail:aladra')->dailyAt('09:00');
     }
 
     /**

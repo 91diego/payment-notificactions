@@ -2,26 +2,27 @@
 
 namespace App\Console\Commands;
 
-use App\Services\NotificationService;
 use Exception;
 use Illuminate\Console\Command;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Storage;
 
-class AnuvaAccountSending extends Command
+class AccountSendingAladra extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'account-sending:anuva';
+    protected $signature = 'mail:aladra';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send customer account to ANUUVA customers';
+    protected $description = 'Send customer account to ALADRA customers';
+    protected $notificationService;
 
     /**
      * Create a new command instance.
@@ -41,7 +42,7 @@ class AnuvaAccountSending extends Command
      */
     public function handle()
     {
-        $message = "ANUVA CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "BRASILIA CRONJOB EXECUTED SUCCESFULLY!!!";
         try {
             $development = [
                 "name" => "ANUVA"
@@ -51,7 +52,7 @@ class AnuvaAccountSending extends Command
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
-        $log = "[" . date('Y-m-d H:i:s') . "] LOG ANUVA EMAIL ACCOUNT SENDING: " . $message;
-        Storage::append("log_anuva_email_account_sending.txt", $log);
+        $log = "[" . date('Y-m-d H:i:s') . "] LOG ALADRA EMAIL ACCOUNT SENDING: " . $message;
+        Storage::append("log_aladra_email_account_sending.txt", $log);
     }
 }
