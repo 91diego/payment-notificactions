@@ -670,11 +670,6 @@ trait BitrixTrait
         $firstRow = 0;
         DB::beginTransaction();
         try {
-            /*$leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[STATUS_ID]=$phase&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
-            if ($phase == 0)
-            {
-                $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=2020-07-31T23:59:59-05:00");
-            }*/
             $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?FILTER[>DATE_CREATE]=" . $request['fechaInicio'] . "");
             $jsonLeads = $leadsUrl->json();
 
@@ -689,10 +684,6 @@ trait BitrixTrait
                             $substractionRows = (intval($firstRow) - intval($jsonLeads['total']))) :
                                 $substractionRows = $rows;
                 $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=" . $request['fechaInicio'] . "");
-                /*if ($phase == 0)
-                {
-                    $leadsUrl =  Http::get("$this->bitrixSite$this->bitrixToken/crm.lead.list?start=$firstRow&FILTER[>DATE_CREATE]=2019-06-30T23:59:59-05:00");
-                }*/
                 $jsonLeads = $leadsUrl->json();
                 for ($pushDeal = 0; $pushDeal < $substractionRows; $pushDeal++)
                 {
@@ -727,7 +718,6 @@ trait BitrixTrait
                         'prospecto_bitrix_id'   => $id,
                     ],
                     [
-                        'prospecto_bitrix_id' => $id,
                         'nombre' => strtoupper($leadName),
                         'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
@@ -823,7 +813,6 @@ trait BitrixTrait
                         'prospecto_bitrix_id' => $id,
                     ],
                     [
-                        'prospecto_bitrix_id' => $id,
                         'nombre' => strtoupper($leadName),
                         'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
