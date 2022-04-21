@@ -41,7 +41,7 @@ class AccountSendingAnuva extends Command
      */
     public function handle()
     {
-        $message = "BRASILIA CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "ANUVA CRONJOB EXECUTED SUCCESFULLY!!!";
         try {
             $development = [
                 "name" => "ANUVA"
