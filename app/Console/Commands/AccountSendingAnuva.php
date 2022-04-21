@@ -46,7 +46,7 @@ class AccountSendingAnuva extends Command
             $development = [
                 "name" => "ANUVA"
             ];
-            $developments = $this->notificationService->index($development);
+            $developments = $this->notificationService->index($development['name']);
             $this->notificationService->store($developments);
         } catch (Exception $e) {
             $message = $e->getMessage();

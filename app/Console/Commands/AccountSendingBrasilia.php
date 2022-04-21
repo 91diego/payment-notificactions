@@ -47,7 +47,7 @@ class AccountSendingBrasilia extends Command
             $development = [
                 "name" => "BRASILIA"
             ];
-            $developments = $this->notificationService->index($development);
+            $developments = $this->notificationService->index($development['name']);
             $this->notificationService->store($developments);
         } catch (Exception $e) {
             $message = $e->getMessage();
