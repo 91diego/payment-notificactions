@@ -41,7 +41,7 @@ class AccountSendingAnuva extends Command
      */
     public function handle()
     {
-        $message = "BRASILIA CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "ANUVA CRONJOB EXECUTED SUCCESFULLY!!!";
         try {
             $development = [
                 "name" => "ANUVA"
@@ -51,7 +51,7 @@ class AccountSendingAnuva extends Command
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
-        $log = "[" . date('Y-m-d H:i:s') . "] LOG BRASILIA EMAIL ACCOUNT SENDING: " . $message;
+        $log = "[" . date('Y-m-d H:i:s') . "] LOG ANUVA EMAIL ACCOUNT SENDING: " . $message;
         Storage::append("log_email_account_sending.txt", $log);
     }
 }

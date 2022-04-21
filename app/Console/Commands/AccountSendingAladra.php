@@ -42,17 +42,17 @@ class AccountSendingAladra extends Command
      */
     public function handle()
     {
-        $message = "BRASILIA CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "ALADRA CRONJOB EXECUTED SUCCESFULLY!!!";
         try {
             $development = [
-                "name" => "ANUVA"
+                "name" => "ALADRA"
             ];
             $developments = $this->notificationService->index($development['name']);
             $this->notificationService->store($developments);
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
-        $log = "[" . date('Y-m-d H:i:s') . "] LOG BRASILIA EMAIL ACCOUNT SENDING: " . $message;
+        $log = "[" . date('Y-m-d H:i:s') . "] LOG ALADRA EMAIL ACCOUNT SENDING: " . $message;
         Storage::append("log_email_account_sending.txt", $log);
     }
 }
