@@ -719,7 +719,6 @@ trait BitrixTrait
                         'prospecto_bitrix_id'   => $id,
                     ],
                     [
-                        'prospecto_bitrix_id'   => $id,
                         'nombre' => strtoupper($leadName),
                         'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
@@ -815,7 +814,6 @@ trait BitrixTrait
                         'prospecto_bitrix_id' => $id,
                     ],
                     [
-                        'prospecto_bitrix_id'   => $id,
                         'nombre' => strtoupper($leadName),
                         'telefono' => $contact['phone'] == 'Sin numero registrado' ? $phone : $contact['phone'],
                         'email' => $contact['email'] == 'Sin correo registrado' ? $email : $contact['email'],
@@ -832,7 +830,7 @@ trait BitrixTrait
                     ]);
                 }
             }
-            $items = Lead::all();
+            $items = Lead::distinct('prospecto_bitrix_id')->get();
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
