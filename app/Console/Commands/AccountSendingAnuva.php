@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use App\Services\NotificationService;
+use App\Repositories\NotificationRepository;
 use Illuminate\Support\Facades\Storage;
 
 class AccountSendingAnuva extends Command
@@ -22,16 +22,16 @@ class AccountSendingAnuva extends Command
      * @var string
      */
     protected $description = 'Send customer account to ANUVA customers';
-    protected $notificationService;
+    protected $notificationRepository;
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationRepository $notificationRepository)
     {
         parent::__construct();
-        $this->notificationService = $notificationService;
+        $this->notificationRepository = $notificationRepository;
     }
 
     /**
@@ -41,17 +41,14 @@ class AccountSendingAnuva extends Command
      */
     public function handle()
     {
-        $message = "ANUVA CRONJOB EXECUTED SUCCESFULLY!!!";
+        $message = "CRONJOB EXECUTED !!!";
         try {
-            $development = [
-                "name" => "ANUVA"
-            ];
-            $developments = $this->notificationService->index($development['name']);
-            $this->notificationService->store($developments);
+            $developments = $this->notificationRepository->index("ANUVA");
+            $this->notificationRepository->store($developments);
         } catch (Exception $e) {
             $message = $e->getMessage();
         }
         $log = "[" . date('Y-m-d H:i:s') . "] LOG ANUVA EMAIL ACCOUNT SENDING: " . $message;
-        Storage::append("log_anuva_email_account_sending.txt", $log);
+        Storage::append("log_cron_job_ANUVA.txt", $log);
     }
 }

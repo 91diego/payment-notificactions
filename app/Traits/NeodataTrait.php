@@ -4,7 +4,9 @@ namespace App\Traits;
 
 use App\Services\NotificationService;
 use App\Repositories\NotificationRepository;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 trait NeodataTrait
 {
@@ -45,13 +47,16 @@ trait NeodataTrait
      * @param notificationCases $notificationCases
      */
     public function getNeodataPayments($notificationCases, $database) {
+        $message = "SUCCESSFULLY";
         try {
             // Get Connection
             $connection = $this->setConnection($database);
             $customerPayments = DB::connection($connection)->select('Select * from dbo.fnNotificaciones()');
             return ['notification_cases' => $notificationCases, 'customer_payments' => $customerPayments];
-        } catch (\Error $err) {
-            return $err;
+        } catch (Exception $e) {
+            $message = $e->getMessage();
         }
+        $log = "[" . date('Y-m-d H:i:s') . "] Neodata connection status: " . $message;
+        Storage::append("log_neodata_connection.txt", $log);
     }
 }
