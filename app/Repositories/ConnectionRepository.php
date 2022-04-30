@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Exception;
 use App\Models\Connection;
 
 class ConnectionRepository
@@ -10,9 +11,9 @@ class ConnectionRepository
     public function index($request)
     {
         try {
-            $result = Connection::where('name', $request['name'])->get();//all();
-        } catch (\Exception $e) {
-            $result = $e;
+            $result = Connection::where('name', $request)->get();
+        } catch (Exception $e) {
+            $result = $e->getMessage();
         }
         return $result;
     }

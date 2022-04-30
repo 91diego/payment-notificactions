@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Exception;
 use App\Mail\PaymentNotification;
 use App\Services\ConnectionService;
 use App\Traits\NeodataTrait;
@@ -13,6 +14,7 @@ class NotificationRepository
 {
     use NeodataTrait;
 
+    protected $connectionService;
     /**
      * Constructor
      */
@@ -30,16 +32,15 @@ class NotificationRepository
         DB::beginTransaction();
         try {
             $customerPayments = [];
-            $connections = $this->connectionService->index($request);
+            $connections =  $this->connectionService->index($request);
             foreach ($connections as $value) {
                 array_push($customerPayments, ['develop_name' => $value->name, "items" => $this->getNeodataPayments($value->notification_cases, $value->name)]);
             }
             DB::commit();
-            return $customerPayments;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return $e;
+        } catch (Exception $e) {
+            $message = $e->getMessage();
         }
+        return $customerPayments;
     }
 
     /**
