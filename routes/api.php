@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\CrmReportsController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -18,3 +19,6 @@ Route::get('reporte-leads', [CrmReportsController::class, 'updateLeadsReport']);
 Route::get('crear-reporte-deals/{category}', [CrmReportsController::class, 'createDealReport']);
 // Request this route to update deals on report, CATEGORY_ID 0 || DEAL-NEGOTATION, CATEGORY_ID 1
 Route::get('actualizar-reporte-deals/{category}', [CrmReportsController::class, 'updateDealsReport']);
+
+
+Route::get('procesar-lead', [LeadController::class, 'getLead']);

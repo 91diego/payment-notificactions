@@ -3,83 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use App\Traits\LogTrait;
 use Illuminate\Http\Request;
+use App\Services\LeadService;
 
 class LeadController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    use LogTrait;
+
+    protected $leadService;
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Controller constructor
      */
-    public function create()
+    public function __construct(LeadService $leadService)
     {
-        //
+        $this->leadService = $leadService;
     }
-
+ 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * GetLead gets lead data from B24
      */
-    public function store(Request $request)
+    public function getLead(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Lead  $lead
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Lead $lead)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Lead  $lead
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Lead $lead)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Lead  $lead
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Lead $lead)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Lead  $lead
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Lead $lead)
-    {
-        //
+        $this->writeToLog($_REQUEST, " INCOMING LEAD", "leads_entrantes");
+        return $this->leadService->getLead($request);
     }
 }
