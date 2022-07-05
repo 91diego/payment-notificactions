@@ -12,6 +12,7 @@ Route::get('reporte-comercial', [CrmReportsController::class, 'comercialReport']
 
 // Request this route only once per phase
 Route::get('crear-reporte-leads', [CrmReportsController::class, 'createLeadsReport']);
+Route::get('obtener-reporte-leads', [CrmReportsController::class, 'getLeadsReport']);
 // Request this route to update leads on report
 //Route::get('reporte-leads', [CrmReportsController::class, 'updateLeadsReport']);
 

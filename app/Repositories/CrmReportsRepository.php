@@ -49,6 +49,12 @@ class CrmReportsRepository
         return $this->getLeads($request);
     }
 
+    public function getLeadsReport()
+    {
+        $leads = Lead::all();
+        return $leads;
+    }
+
     /**
      * Update leads report
      * @param cronJob bool, indicate if this method is used in the cronjob or not

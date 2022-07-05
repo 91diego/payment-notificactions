@@ -39,6 +39,11 @@ class CrmReportsService
         return $this->crmReportsRepository->createLeadsReport($request);
     }
 
+    public function getLeadsReport()
+    {
+        return $this->crmReportsRepository->getLeadsReport();
+    }
+
     /**
      * Update leads report
      */

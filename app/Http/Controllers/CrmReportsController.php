@@ -46,6 +46,11 @@ class CrmReportsController extends Controller
         return $this->crmReportsService->createLeadsReport($request->all());
     }
 
+    public function getLeadsReport()
+    {
+        return $this->crmReportsService->getLeadsReport();
+    }
+
     /**
      * Update leads report
      */
