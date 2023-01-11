@@ -140,7 +140,7 @@ class DealRepository
                 $statusNumber = $this->b24StatusPosition($dealStage);
                 $message = "La etapa del deal $id ha sido cambiada a $dealStage.";
                 $connection = $this->setConnection('PORTAL_WEB');
-                $res = DB::connection($connection)->update("UPDATE deals SET status = '$dealStage', status_number = $statusNumber where id = ?", [$id]);
+                $res = DB::connection($connection)->update("UPDATE deals SET status = '$dealStage', status_number = $statusNumber where deal_id = ?", [$id]);
                 if (!$res)
                 {
                     $message = "La etapa del deal $id no ha sido modificada";
