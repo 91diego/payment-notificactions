@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class DealRepository
 {
-
     /**
      * return deal stage
      */
@@ -142,7 +141,17 @@ class DealRepository
                 $connection = $this->setConnection('PORTAL_WEB');
                 // $res = DB::connection($connection)->update("UPDATE deals SET status = '$dealStage', status_number = $statusNumber where deal_id = ?", [$id]);
                 // $res = DB::connection($connection)->update('UPDATE deals SET status = ?, status_number = ? where deal_id = ?', ["$dealStage" , $statusNumber , $id]);
-                $res = DB::connection($connection)->update(DB::raw('UPDATE deals SET status = "' . $dealStage . '", status_number = ' . $statusNumber . ' where deal_id = ' . $id));
+                // enable the query log
+                DB::enableQueryLog();
+                $res = DB::connection($connection)->update(DB::raw('UPDATE deals SET status = "' . $dealStage . '", status_number = ' . $statusNumber . ' where deal_id = ' . intval($id)));
+                $x = DB::table('deals')
+                    ->where('deal_id', $id)
+                    ->update([
+                        'status' => "$dealStage",
+                        'status_number' => $statusNumber,
+                    ]);
+                // view the query log
+                // dd(DB::getQueryLog());
                 if (!$res)
                 {
                     $message = "La etapa del deal $id no ha sido modificada";
