@@ -142,7 +142,7 @@ class DealRepository
                 $connection = $this->setConnection('PORTAL_WEB');
                 // $res = DB::connection($connection)->update("UPDATE deals SET status = '$dealStage', status_number = $statusNumber where deal_id = ?", [$id]);
                 // $res = DB::connection($connection)->update('UPDATE deals SET status = ?, status_number = ? where deal_id = ?', ["$dealStage" , $statusNumber , $id]);
-                $res = DB::connection($connection)->update(DB::raw('UPDATE deals SET status = ' . $dealStage . ', status_number = ' . $statusNumber . 'where deal_id = ' . $id));
+                $res = DB::connection($connection)->update(DB::raw('UPDATE deals SET status = ' . "$dealStage" . ', status_number = ' . $statusNumber . 'where deal_id = ' . $id));
                 if (!$res)
                 {
                     $message = "La etapa del deal $id no ha sido modificada";
