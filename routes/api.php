@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\DealController;
 use App\Http\Controllers\CrmReportsController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -23,3 +24,6 @@ Route::get('actualizar-reporte-deals/{category}', [CrmReportsController::class, 
 
 
 Route::get('procesar-lead', [LeadController::class, 'getLead']);
+
+// insert stage status field on deals table
+Route::get('deal-stage', [DealController::class, 'getDealStage']);
