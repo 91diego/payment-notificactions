@@ -114,6 +114,23 @@ class DealRepository
         return $statusNumber;
     }
 
+        /**
+     * return payment method
+     */
+    public function getPaymentMethodByDealId($id)
+    {
+        // UF_CRM_1560978472415 -> Esquema de compra
+        $deal = $this->getDealInformation($id);
+        $paymentMethod = Http::get("https://intranet.idex.cc/rest/1/evcwp69f5yg7gkwc/crm.deal.fields");
+        $toJson = $paymentMethod->json();
+        foreach ($toJson['result']['UF_CRM_1560978472415']['items'] as $value) {
+            if ($deal['UF_CRM_1560978472415'] == $value['ID']) {
+                return $this->mapPaymentMethod($value['VALUE']);
+            }
+        }
+        return 'El método de pago no existe.';
+    }
+
 
     public function setConnection($request)
     {
@@ -139,8 +156,7 @@ class DealRepository
                 $statusNumber = $this->b24StatusPosition($dealStage);
                 $message = "La etapa del deal $id ha sido cambiada a $dealStage.";
                 $connection = $this->setConnection('PORTAL_WEB');
-                // $res = DB::connection($connection)->update("UPDATE deals SET status = '$dealStage', status_number = $statusNumber where deal_id = ?", [$id]);
-                // $res = DB::connection($connection)->update('UPDATE deals SET status = ?, status_number = ? where deal_id = ?', ["$dealStage" , $statusNumber , $id]);
+                $paymentMethod = $this->getPaymentMethodByDealId($id);
                 // enable the query log
                 DB::enableQueryLog();
                 $res = DB::connection($connection)->update(DB::raw('UPDATE deals SET status = "' . $dealStage . '", status_number = ' . $statusNumber . ' where deal_id = ' . intval($id)));
@@ -149,6 +165,7 @@ class DealRepository
                     ->update([
                         'status' => "$dealStage",
                         'status_number' => $statusNumber,
+                        'payment_method' => $paymentMethod,
                     ]);
                 // view the query log
                 // dd(DB::getQueryLog());
