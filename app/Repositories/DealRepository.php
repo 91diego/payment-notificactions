@@ -132,6 +132,33 @@ class DealRepository
     }
 
 
+    /**
+     * Map payment method to cash or credit method
+     */
+    public function mapPaymentMethod($paymentMethod)
+    {
+        $cash = [
+            'Contado', 'Plazo',
+            'Contado con reserva', 'Recursos propios',
+            '80/20', 'Plazo Plus',
+            'Flex', 'Reventa', 'Rentas contado'
+        ];
+        $credit = ['Hipotecario', 'Infonavit', 'Cofinavit'];
+
+        foreach ($cash as $value) {
+            if ($paymentMethod == $value) {
+                return 'CONTADO';
+            }
+        }
+
+        foreach ($credit as $value) {
+            if ($paymentMethod == $value) {
+                return 'HIPOTECARIO';
+            }
+        }
+
+        return 'El método de pago no existe';
+    }
     public function setConnection($request)
     {
         switch ($request) {
