@@ -27,3 +27,6 @@ Route::get('procesar-lead', [LeadController::class, 'getLead']);
 
 // insert stage status field on deals table
 Route::get('deal-stage', [DealController::class, 'getDealStage']);
+
+// Get information about bitrix and create customer user, it will be used as webhook on BITRIX24
+Route::get('/bitrix-get-user', [LeadController::class, 'getDealById']);

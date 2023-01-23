@@ -20,7 +20,7 @@ class LeadController extends Controller
     {
         $this->leadService = $leadService;
     }
- 
+
     /**
      * GetLead gets lead data from B24
      */
@@ -28,5 +28,16 @@ class LeadController extends Controller
     {
         $this->writeToLog($_REQUEST, " INCOMING LEAD", "leads_entrantes");
         return $this->leadService->getLead($request);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getDealById(Request $request)
+    {
+        $dealById = $this->leadService->getDealById($request->all());
+        return $this->leadService->storeDealById($dealById);
     }
 }

@@ -159,6 +159,7 @@ class DealRepository
 
         return 'El método de pago no existe';
     }
+
     public function setConnection($request)
     {
         switch ($request) {
@@ -187,7 +188,7 @@ class DealRepository
                 // enable the query log
                 DB::enableQueryLog();
                 $res = DB::connection($connection)->update(DB::raw('UPDATE deals SET status = "' . $dealStage . '", status_number = ' . $statusNumber . ' where deal_id = ' . intval($id)));
-                $x = DB::table('deals')
+                $dealPortal = DB::table('deals')
                     ->where('deal_id', $id)
                     ->update([
                         'status' => "$dealStage",
@@ -196,7 +197,7 @@ class DealRepository
                     ]);
                 // view the query log
                 // dd(DB::getQueryLog());
-                if (!$res)
+                if (!$dealPortal)
                 {
                     $message = "La etapa del deal $id no ha sido modificada";
                 }
