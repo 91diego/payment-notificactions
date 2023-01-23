@@ -218,8 +218,8 @@ class LeadRepository
                     ];
                     $userEmail = '';
                     $user->email == 'SIN EMAIL' ? $userEmail = 'ti-sistemas@idex.cc' : $userEmail = $user->email;
-                    //Mail::to($userEmail)->send(new WelcomeMail($userAccess));
-                    Mail::to('dgonzalez@milktech.io')->send(new WelcomeMail($userAccess));
+                    Mail::to($userEmail)->send(new WelcomeMail($userAccess));
+                    //Mail::to('dgonzalez@milktech.io')->send(new WelcomeMail($userAccess));
                 } else {
                     $userProfile = User::where('email', '=', $customerEmail)->with('profile')->get();
                     $deal->user_id = $userProfile[0]->id;
